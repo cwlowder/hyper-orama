@@ -10,7 +10,8 @@ exports.decorateTerms = (Terms, { React }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
-      this.terms = null;
+	  this.terms = null;
+	  this.fileName = `terminal-session-${performance.now()}.webm`
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
