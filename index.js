@@ -7,8 +7,8 @@ var ncp = require("copy-paste")
 exports.decorateTerms = (Terms, {React, notify}) => {
   return class extends React.Component {
 	constructor(props, context) {
-	  super(props, context);
-	  this.terms = null;
+		super(props, context);
+		this.terms = null;
 		this.onDecorated = this.onDecorated.bind(this);
 		this.state = {
 			isRecording: false,
@@ -70,13 +70,13 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 			"window:togglerecord": e => {
 				// e parameter is React key event
 				e.preventDefault();
+				console.log("PRESSED")
 				this.setState((prevState) => ({ isRecording: !prevState.isRecording }))
 			}
-		}
-	);
+		});
 
-	  // Don't forget to propagate it to HOC chain
-	  if (this.props.onDecorated) this.props.onDecorated(terms);
+		// Don't forget to propagate it to HOC chain
+		if (this.props.onDecorated) this.props.onDecorated(terms);
 	}
 
 	render() {
@@ -97,7 +97,24 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 				'zIndex': 100000000,
 			},
 		onClick: () => shell.openExternal(this.state.deployedUrl)},
-		`Your "video" is online at ${this.state.deployedUrl}`)];
+		`Your "video" is online at ${this.state.deployedUrl}`),
+			this.state.isRecording && React.createElement("div", {
+				key: 2,
+				className: "IsRecording",
+				style: {
+					animation: 'blink-motion 1s infinite',
+					position: 'absolute',
+					borderRadius: '50%',
+					top: document.querySelector('.header_appTitle').getBoundingClientRect().top + 2,
+					left: document.querySelector('.header_appTitle').offsetLeft - 16,
+					width: 9,
+					height: 9,
+					border: '1px solid black',
+					boxShadow: '0 0 5px red',
+					backgroundColor: 'red',
+				}
+			}), React.createElement('style', {key: 3}, `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`)
+		];
 	}
   }
 }
