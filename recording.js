@@ -34,7 +34,7 @@ function handleStream(stream) {
   });
 }
 
-function saveStream(stream) {
+function saveStream(fileName) { return function reallySaveStream(stream) {
   // Logic to save blob to fs
 
   handleStream(stream)
@@ -49,7 +49,7 @@ function saveStream(stream) {
         if (!fs.existsSync(downloadsPathName)) {
           fs.mkdirSync(downloadsPathName);
         }
-        const pathName = path.join(downloadsPathName, 'my-clip.webm');
+        const pathName = path.join(downloadsPathName, fileName);
         fs.writeFile(pathName, buffer, (err, res) => {
           if (err) {
             console.error(err);
@@ -65,12 +65,13 @@ function saveStream(stream) {
       console.error(e);
     });
 }
+}
 
 function handleUserMediaError(e) {
   console.log('getUserMediaError: ' + JSON.stringify(e, null, '---'));
 }
 
-exports.startRecording = function() {
+exports.startRecording = function(fileName) {
   title = document.title;
   document.title = `[STARTING VIDEO CAPTURE] ${title}`;
   desktopCapturer.getSources({ types: ['window', 'screen'] }, function(
@@ -95,7 +96,7 @@ exports.startRecording = function() {
               }
             }
           },
-          saveStream,
+          saveStream(fileName),
           handleUserMediaError
         );
         return;
