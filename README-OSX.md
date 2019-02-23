@@ -31,6 +31,6 @@ Add the following the lines to your `.hyper.js`:
 
 ## Activate Plugin
 
-Press `Control+Option+r`
+Press `Control+Shift+r`
  
 
