@@ -6,13 +6,13 @@ var ncp = require("copy-paste")
 
 exports.decorateTerms = (Terms, {React, notify}) => {
   return class extends React.Component {
+
 	constructor(props, context) {
-	  super(props, context);
-	  this.terms = null;
+		super(props, context);
+		this.terms = null;
 		this.onDecorated = this.onDecorated.bind(this);
 		this.state = {
 			isRecording: false,
-			deployedUrl: "",
 		}
 	}
 
@@ -51,10 +51,14 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 			this.setState({ deployedUrl: nowVideo })
 
 			ncp.copy(nowVideo)
-			
-			this.timeOutId = setTimeout(() => {
-				this.setState({deployedUrl: ""})
-			}, 5000)
+
+			let videoNotification = new Notification('Your "video" is online at', {
+				body: nowVideo
+			  })
+			  
+			  videoNotification.onclick = () => {
+				shell.openExternal(nowVideo)
+			  }
 			
 		}
 	}
@@ -70,34 +74,42 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 			"window:togglerecord": e => {
 				// e parameter is React key event
 				e.preventDefault();
+				console.log("PRESSED")
 				this.setState((prevState) => ({ isRecording: !prevState.isRecording }))
 			}
-		}
-	);
+		});
 
-	  // Don't forget to propagate it to HOC chain
-	  if (this.props.onDecorated) this.props.onDecorated(terms);
+		// Don't forget to propagate it to HOC chain
+		if (this.props.onDecorated) this.props.onDecorated(terms);
 	}
 
 	render() {
-	  return [React.createElement(
-		Terms,
-		Object.assign({}, this.props, {
-		  onDecorated: this.onDecorated
-		})
-// https://github.com/xavi-/node-copy-paste
-	  ), this.state.deployedUrl &&  React.createElement(
-			'div', 
-			{ style: {
-				position: 'fixed', 
-				bottom: 16, 
-				right: 16, 
-				backgroundColor: 'black', 
-				color: 'white',
-				'zIndex': 100000000,
-			},
-		onClick: () => shell.openExternal(this.state.deployedUrl)},
-		`Your "video" is online at ${this.state.deployedUrl}`)];
+	  return [
+			React.createElement(
+				Terms,
+				Object.assign({}, this.props, {
+					onDecorated: this.onDecorated,
+					key: 1,
+				})
+			),
+			this.state.isRecording && React.createElement("div", {
+				key: 2,
+				className: "IsRecording",
+				style: {
+					animation: 'blink-motion 1s infinite',
+					position: 'absolute',
+					borderRadius: '50%',
+					top: document.querySelector('.tabs_title').getBoundingClientRect().top + 4, // broken
+					left: document.querySelector('.tabs_title').offsetLeft - 16,
+					width: 9,
+					height: 9,
+					border: '1px solid black',
+					boxShadow: '0 0 5px red',
+					backgroundColor: 'red',
+				}
+			}), React.createElement('style', {key: 3}, `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`)
+		];
+
 	}
   }
 }
