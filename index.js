@@ -10,8 +10,8 @@ exports.decorateTerms = (Terms, { React }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
-	  this.terms = null;
-	  this.fileName = `terminal-session-${performance.now()}.webm`
+      this.terms = null;
+      this.fileName = `terminal-session-${performance.now()}.webm`;
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
@@ -98,7 +98,7 @@ exports.decorateTerms = (Terms, { React }) => {
       ncp.copy(nowVideo);
 
       let videoNotification = new Notification('Your "video" is online at', {
-        body: nowVideo
+        body: nowVideo,
       });
 
       videoNotification.onclick = () => {
@@ -122,7 +122,7 @@ exports.decorateTerms = (Terms, { React }) => {
             recording.stopRecording();
           }
           this.setState(prevState => ({ isRecording: !prevState.isRecording }));
-        }
+        },
       });
 
       // Don't forget to propagate it to HOC chain
@@ -136,8 +136,8 @@ exports.decorateTerms = (Terms, { React }) => {
         React.createElement(
           Terms,
           Object.assign({}, this.props, {
-            onDecorated: this.onDecorated
-          })
+            onDecorated: this.onDecorated,
+          }),
         ),
         this.state.isRecording &&
           React.createElement('div', {

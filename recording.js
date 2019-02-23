@@ -6,37 +6,34 @@ const saveAs = require('file-saver').saveAs;
 
 let record = null;
 
-function saveStream(fileName) { return function reallySaveStream(stream) {
-  // Logic to save blob to fs
+function saveStream(fileName) {
+  return function reallySaveStream(stream) {
+    // Logic to save blob to fs
 
-  handleStream(stream)
-    .then(blob => {
-      const reader = new FileReader();
-      reader.onload = function() {
-        const buffer = new Buffer.from(new Uint8Array(reader.result));
-        const appPath = path.resolve(__dirname, './.tmp');
-        const downloadsFolderName = '';
-        const downloadsPathName = path.join(appPath, downloadsFolderName);
-        // const downloadsPathName = appPath;
-        if (!fs.existsSync(downloadsPathName)) {
-          fs.mkdirSync(downloadsPathName);
-        }
-        const pathName = path.join(downloadsPathName, fileName);
-        fs.writeFile(pathName, buffer, (err, res) => {
-          if (err) {
-            console.error(err);
-            return;
+    handleStream(stream)
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onload = function() {
+          const buffer = new Buffer.from(new Uint8Array(reader.result));
+          const appPath = path.resolve(__dirname, './.tmp');
+          const downloadsFolderName = '';
+          const downloadsPathName = path.join(appPath, downloadsFolderName);
+          // const downloadsPathName = appPath;
+          if (!fs.existsSync(downloadsPathName)) {
+            fs.mkdirSync(downloadsPathName);
           }
-          console.log('video saved');
-        });
-      };
+          const pathName = path.join(downloadsPathName, fileName);
+          fs.writeFile(pathName, buffer, err => {
+            if (err) {
+              return;
+            }
+          });
+        };
 
-      reader.readAsArrayBuffer(blob);
-    })
-    .catch(e => {
-      console.error(e);
-    });
-}
+        reader.readAsArrayBuffer(blob);
+      })
+      .catch(() => {});
+  };
 }
 
 exports.startRecording = function(canvases) {
