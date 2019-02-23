@@ -6,7 +6,7 @@ const saveAs = require('file-saver').saveAs;
 
 let record = null;
 
-function saveStream(stream) {
+function saveStream(fileName) { return function reallySaveStream(stream) {
   // Logic to save blob to fs
 
   handleStream(stream)
@@ -21,7 +21,7 @@ function saveStream(stream) {
         if (!fs.existsSync(downloadsPathName)) {
           fs.mkdirSync(downloadsPathName);
         }
-        const pathName = path.join(downloadsPathName, 'my-clip.webm');
+        const pathName = path.join(downloadsPathName, fileName);
         fs.writeFile(pathName, buffer, (err, res) => {
           if (err) {
             console.error(err);
@@ -36,6 +36,7 @@ function saveStream(stream) {
     .catch(e => {
       console.error(e);
     });
+}
 }
 
 exports.startRecording = function(canvases) {

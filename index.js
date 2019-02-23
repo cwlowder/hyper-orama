@@ -69,7 +69,8 @@ exports.decorateTerms = (Terms, { React }) => {
           JSON.stringify(nowConfig, null, 2),
           'utf8'
         );
-        console.log(__dirname);
+		// console.log(__dirname);
+		const pathToTmp = path.resolve(__dirname, "./.tmp/")
         var child = spawn(
           path.resolve(__dirname, './node_modules/now/download/dist/now'),
           [path.resolve(__dirname, './.tmp/')]
@@ -77,7 +78,8 @@ exports.decorateTerms = (Terms, { React }) => {
 
         child.stdout.on('data', data => {
           console.log(`stdout: ${data}`);
-          this._notifyVideoUploaded(data);
+		  this._notifyVideoUploaded(`${data}/${this.state.filename}`);
+		
         });
 
         child.stderr.on('data', data => {
