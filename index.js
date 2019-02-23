@@ -3,7 +3,10 @@ exports.decorateTerms = (Terms, {React}) => {
 	constructor(props, context) {
 	  super(props, context);
 	  this.terms = null;
-	  this.onDecorated = this.onDecorated.bind(this);
+		this.onDecorated = this.onDecorated.bind(this);
+		this.state = {
+			isRecording: false
+		}
 	}
 
 	onDecorated(terms) {
@@ -13,7 +16,7 @@ exports.decorateTerms = (Terms, {React}) => {
 			"window:togglerecord": e => {
 				// e parameter is React key event
 				e.preventDefault();
-				alert("I LIKE CHEESE")
+				this.setState((prevState) => ({ isRecording: !prevState.isRecording }))
 			}
 		}
 	);
