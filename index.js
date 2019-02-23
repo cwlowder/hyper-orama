@@ -58,7 +58,7 @@ return class extends React.Component {
 // Adding Keymaps
 exports.decorateKeymaps = keymaps => {
   const newKeymaps = {
-	"window:togglerecord": "ctrl+alt+r"
+	"window:togglerecord": "ctrl+shift+r"
   };
   return Object.assign({}, keymaps, newKeymaps);
 };
