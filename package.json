@@ -1,0 +1,19 @@
+{
+  "name": "hyper-orama",
+  "version": "1.0.0",
+  "description": "See github",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cwlowder/hyper-orama.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cwlowder/hyper-orama/issues"
+  },
+  "homepage": "https://github.com/cwlowder/hyper-orama#readme"
+}
