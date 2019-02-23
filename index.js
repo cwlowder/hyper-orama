@@ -41,7 +41,7 @@ return class extends React.Component {
 					animation: 'blink-motion 1s infinite',
 					position: 'absolute',
 					borderRadius: '50%',
-					top: document.querySelector('.header_appTitle').getBoundingClientRect().top + 4,
+					top: document.querySelector('.header_appTitle').getBoundingClientRect().top + 2,
 					left: document.querySelector('.header_appTitle').offsetLeft - 16,
 					width: 9,
 					height: 9,
