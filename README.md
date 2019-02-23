@@ -29,7 +29,7 @@ Add the following the lines to your `.hyper.js`:
 
 ```
 
-## Active Plugin
+## Activate Plugin
 
 Press `Control+Option+r`
  
