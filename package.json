@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/cwlowder/hyper-orama/issues"
   },
-  "homepage": "https://github.com/cwlowder/hyper-orama#readme"
+  "homepage": "https://github.com/cwlowder/hyper-orama#readme",
+  "dependencies": {
+    "now": "^14.0.0"
+  }
 }
