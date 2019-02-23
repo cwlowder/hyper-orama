@@ -128,7 +128,7 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 // Adding Keymaps
 exports.decorateKeymaps = keymaps => {
   const newKeymaps = {
-	"window:togglerecord": "ctrl+alt+r"
+	"window:togglerecord": "ctrl+shift+r"
   };
   return Object.assign({}, keymaps, newKeymaps);
 };

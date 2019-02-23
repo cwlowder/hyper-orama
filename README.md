@@ -1,28 +1,26 @@
 # hyper-orama
 A screen recorder for the hyper terminal
 
-To add this plugin for development in the hyper terminal
+To add this plugin for development in the hyper terminal:
+
+
+## Setup
+For initial setup, follow: https://github.com/zeit/hyper/blob/master/PLUGINS.md#create-a-dev-config-file
+
+  *MAC NOTE:* 
+    the plugin directory is automatically created in `~/.hyper-plugins/local/` on mac, use this instead of `.hyper-plugins/local/`
+
+Clone the repository into `.hyper-plugins/local/`:
 
 ```bash 
-mkdir ~/.hyper-plugins # create these follows if they don't exist
-mkdir ~/.hyper-plugins/local/ 
-
-```
-
-```bash 
-
-cd ~/.hyper-plugins/local/
+cd <repository_root>/.hyper-plugins/local/
 git clone git@github.com:cwlowder/hyper-orama.git
 ```
 
+Add `hyper-orama` to the localPlugins array in `.hyper.js`
 
-Add the following the lines to your `.hyper.js`:
-
+Your `hyper.js` file should look like this: 
 ```javascript
-
-  // in development, you can create a directory under
-  // `~/.hyper_plugins/local/` and include it here
-  // to load it and avoid it being `npm install`ed
   // ... 
   localPlugins: ['hyper-orama'],
   // ... 
@@ -31,6 +29,6 @@ Add the following the lines to your `.hyper.js`:
 
 ## Activate Plugin
 
-Press `Control+Option+r`
+Press `Control+Shift+r`
  
 
