@@ -1,7 +1,7 @@
 # hyper-orama
 A screen recorder for the hyper terminal
 
-To use repo in your hyper terminal do the following:
+To add this plugin for development in the hyper terminal
 
 ```bash 
 mkdir ~/.hyper-plugins # create these follows if they don't exist
