@@ -1,10 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
-const { shell } = require("electron");
 const ncp = require("copy-paste");
 const recording = require("./recording");
 const del = require('del');
+
+function addNotificationMessage(text, url = null, dismissable = true) {
+	return {
+	  type: 'NOTIFICATION_MESSAGE',
+	  text,
+	  url,
+	  dismissable
+	};
+  }
 
 exports.decorateTerms = (Terms, { React, notify }) => {
   return class extends React.Component {
@@ -63,14 +71,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
 
     _notifyVideoUploaded(nowVideo) {
       ncp.copy(nowVideo);
-
-      let videoNotification = new Notification('Your "video" is online at', {
-        body: nowVideo
-      });
-
-      videoNotification.onclick = () => {
-        shell.openExternal(nowVideo);
-      };
+		window.store.dispatch(addNotificationMessage('Your video is online at', nowVideo, true));
     }
 
     componentWillUnmount() {
