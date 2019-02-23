@@ -6,6 +6,18 @@ const ncp = require('copy-paste');
 const recording = require('./recording');
 const del = require('del');
 
+exports.reduceUI = (state, action) => {
+  switch (action.type) {
+    case 'CONFIG_LOAD':
+    case 'CONFIG_RELOAD': {
+      const config = action.config.hyperOrama;
+      return state.set('hyperOrama', config);
+    }
+    default:
+      return state;
+  }
+};
+
 exports.decorateTerms = (Terms, { React }) => {
   return class extends React.Component {
     constructor(props, context) {
@@ -32,9 +44,16 @@ exports.decorateTerms = (Terms, { React }) => {
           builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
-        fs.writeFileSync(dir + '/now.json', JSON.stringify(nowConfig, null, 2), 'utf8');
+        fs.writeFileSync(
+          dir + '/now.json',
+          JSON.stringify(nowConfig, null, 2),
+          'utf8',
+        );
         const pathToTmp = path.resolve(__dirname, './.tmp/');
-        var child = spawn(path.resolve(__dirname, './node_modules/now/download/dist/now'), [pathToTmp]);
+        var child = spawn(
+          path.resolve(__dirname, './node_modules/now/download/dist/now'),
+          [pathToTmp],
+        );
 
         child.stdout.on('data', data => {
           this._notifyVideoUploaded(`${data}/${this.fileName}`);
@@ -102,7 +121,9 @@ exports.decorateTerms = (Terms, { React }) => {
               position: 'absolute',
               borderRadius: '50%',
               top: document.querySelector('.header_appTitle')
-                ? document.querySelector('.header_appTitle').getBoundingClientRect().top + 2
+                ? document
+                    .querySelector('.header_appTitle')
+                    .getBoundingClientRect().top + 2
                 : 'initial',
               left: document.querySelector('.header_appTitle')
                 ? document.querySelector('.header_appTitle').offsetLeft - 16
