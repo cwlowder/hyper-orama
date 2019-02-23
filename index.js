@@ -91,7 +91,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
         "window:togglerecord": e => {
           // e parameter is React key event
           e.preventDefault();
-          console.log("PRESSED");
           if (!this.state.isRecording) {
             recording.startRecording();
           } else {
@@ -106,17 +105,17 @@ exports.decorateTerms = (Terms, { React, notify }) => {
     }
 
     render() {
-      return [
+      return React.createElement(
+				"div",
+				null,
         React.createElement(
           Terms,
           Object.assign({}, this.props, {
-            onDecorated: this.onDecorated,
-            key: 1
+            onDecorated: this.onDecorated
           })
         ),
         this.state.isRecording &&
           React.createElement("div", {
-            key: 2,
             className: "IsRecording",
             style: {
               animation: "blink-motion 1s infinite",
@@ -138,11 +137,11 @@ exports.decorateTerms = (Terms, { React, notify }) => {
             }
           }),
         React.createElement(
-          "style",
-          { key: 3 },
+					"style",
+					null,
           `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`
         )
-      ];
+      );
     }
   };
 };

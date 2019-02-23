@@ -1,7 +1,6 @@
 const { desktopCapturer, app } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const saveAs = require('file-saver').saveAs;
 const prompt = require('electron-prompt');
 let mediaRecorder;
 let title;
@@ -40,7 +39,6 @@ function saveStream(stream) {
 
   handleStream(stream)
     .then(blob => {
-      // saveAs(blob, 'test.webm');
       const reader = new FileReader();
       reader.onload = function() {
         const buffer = new Buffer.from(new Uint8Array(reader.result));
