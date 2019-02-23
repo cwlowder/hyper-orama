@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/cwlowder/hyper-orama#readme",
   "dependencies": {
+    "electron-prompt": "^1.3.0",
+    "file-saver": "^2.0.1",
     "now": "^14.0.0"
   }
 }
