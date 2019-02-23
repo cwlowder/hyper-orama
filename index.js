@@ -1,26 +1,26 @@
-const fs = require("fs");
-const path = require("path");
-const { spawn } = require("child_process");
-const { shell } = require("electron");
-const ncp = require("copy-paste");
-const recording = require("./recording");
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const { shell } = require('electron');
+const ncp = require('copy-paste');
+const recording = require('./recording');
 const del = require('del');
 
-exports.decorateTerms = (Terms, { React, notify }) => {
+exports.decorateTerms = (Terms, { React }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
-	  this.terms = null;
-	  this.fileName = `terminal-session-${performance.now()}.webm`
+      this.terms = null;
+      this.fileName = `terminal-session-${performance.now()}.webm`;
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
-		isRecording: false,
+        isRecording: false,
       };
     }
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
-        const dir = path.resolve(__dirname, "./.tmp");
+        const dir = path.resolve(__dirname, './.tmp');
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
@@ -29,32 +29,21 @@ exports.decorateTerms = (Terms, { React, notify }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: this.fileName, use: "@now/static" }]
+          builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
-        fs.writeFileSync(
-          dir + "/now.json",
-          JSON.stringify(nowConfig, null, 2),
-          "utf8"
-        );
-		const pathToTmp = path.resolve(__dirname, "./.tmp/")
-        var child = spawn(
-          path.resolve(__dirname, "./node_modules/now/download/dist/now"),
-          [pathToTmp]
-        );
+        fs.writeFileSync(dir + '/now.json', JSON.stringify(nowConfig, null, 2), 'utf8');
+        const pathToTmp = path.resolve(__dirname, './.tmp/');
+        var child = spawn(path.resolve(__dirname, './node_modules/now/download/dist/now'), [pathToTmp]);
 
-        child.stdout.on("data", data => {
-		  console.log(`stdout: ${data}`);
-		  
-		  this._notifyVideoUploaded(`${data}/${this.fileName}`);
-		
+        child.stdout.on('data', data => {
+          this._notifyVideoUploaded(`${data}/${this.fileName}`);
         });
 
         child.stderr.on('data', () => {});
 
-        child.on("close", code => {
-		  console.log(`child process exited with code ${code}`);
-		  del(pathToTmp, { force: true})
+        child.on('close', () => {
+          del(pathToTmp, { force: true });
         });
       }
     }

@@ -30,33 +30,34 @@ function handleStream(stream) {
   });
 }
 
-function saveStream(fileName) { return function reallySaveStream(stream) {
-  // Logic to save blob to fs
+function saveStream(fileName) {
+  return function reallySaveStream(stream) {
+    // Logic to save blob to fs
 
-  handleStream(stream)
-    .then(blob => {
-      const reader = new FileReader();
-      reader.onload = function() {
-        const buffer = new Buffer.from(new Uint8Array(reader.result));
-        const appPath = path.resolve(__dirname, './.tmp');
-        const downloadsFolderName = '';
-        const downloadsPathName = path.join(appPath, downloadsFolderName);
-        // const downloadsPathName = appPath;
-        if (!fs.existsSync(downloadsPathName)) {
-          fs.mkdirSync(downloadsPathName);
-        }
-        const pathName = path.join(downloadsPathName, fileName);
-        fs.writeFile(pathName, buffer, (err, res) => {
-          if (err) {
-            return;
+    handleStream(stream)
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onload = function() {
+          const buffer = new Buffer.from(new Uint8Array(reader.result));
+          const appPath = path.resolve(__dirname, './.tmp');
+          const downloadsFolderName = '';
+          const downloadsPathName = path.join(appPath, downloadsFolderName);
+          // const downloadsPathName = appPath;
+          if (!fs.existsSync(downloadsPathName)) {
+            fs.mkdirSync(downloadsPathName);
           }
-        });
-      };
+          const pathName = path.join(downloadsPathName, fileName);
+          fs.writeFile(pathName, buffer, err => {
+            if (err) {
+              return;
+            }
+          });
+        };
 
-      reader.readAsArrayBuffer(blob);
-    })
-    .catch(() => {});
-}
+        reader.readAsArrayBuffer(blob);
+      })
+      .catch(() => {});
+  };
 }
 
 function handleUserMediaError() {}
@@ -82,7 +83,7 @@ exports.startRecording = function(fileName) {
             },
           },
           saveStream(fileName),
-          handleUserMediaError
+          handleUserMediaError,
         );
         return;
       }
