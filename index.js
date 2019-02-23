@@ -26,13 +26,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           fs.mkdirSync(dir);
         }
 
-        // Write the target file to disk
-        fs.writeFileSync(
-          dir + "/" + this.state.filename,
-          "",
-          "utf8"
-        );
-
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
