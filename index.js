@@ -37,7 +37,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           JSON.stringify(nowConfig, null, 2),
           "utf8"
         );
-		// console.log(__dirname);
 		const pathToTmp = path.resolve(__dirname, "./.tmp/")
         var child = spawn(
           path.resolve(__dirname, "./node_modules/now/download/dist/now"),
@@ -47,7 +46,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
         child.stdout.on("data", data => {
           console.log(`stdout: ${data}`);
 		  this._notifyVideoUploaded(`${data}/${this.state.filename}`);
-		
         });
 
         child.stderr.on("data", data => {
@@ -62,7 +60,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
     }
 
     _notifyVideoUploaded(nowVideo) {
-    //   console.log("RUNNING!!!!!!!!!!!!!!!!!!!!" + nowVideo);
       ncp.copy(nowVideo);
 
       let videoNotification = new Notification('Your "video" is online at', {
