@@ -1,5 +1,10 @@
+const VideoStreamMerger = require('video-stream-merger');
 const path = require('path');
 const fs = require('fs');
+
+const saveAs = require('file-saver').saveAs;
+
+let record = null;
 
 function saveStream(stream) {
   // Logic to save blob to fs
@@ -43,21 +48,56 @@ exports.startRecording = function(canvases) {
   const height = getMax('height');
   const width = getMax('width');
 
-  console.log(height, width);
+  /* Gram tracks from canvases */
+  const chunks = new Array();
+  const fps = 25;
+  const textStream = canvases[2].captureStream(fps);
+  const cursorStream = canvases[1].captureStream(fps);
 
-  const composite = document.createElement('canvas');
-  composite.width = width;
-  composite.height = height;
-  const compCTX = composite.getContext('2d');
+  /* Merge tracks into a single stream */
+  let stream;
+  const merger = new VideoStreamMerger({
+    width,
+    height,
+    fps,
+    clearRect: false
+  });
+  merger.addStream(textStream, {
+    x: 0,
+    y: 0,
+    width,
+    height,
+    mute: true
+  });
+  merger.addStream(cursorStream, {
+    x: 0,
+    y: 0,
+    width,
+    height,
+    mute: true
+  });
+  merger.start();
+  stream = merger.result;
 
-  for (canvas of canvases) {
-    // compCTX.drawImage(canvas, 0, 0);
-    console.log(canvas);
-    console.log(canvas.toDataURL(0, 0, width, height));
-  }
+  record = new MediaRecorder(stream);
+  record.start();
+
+  record.ondataavailable = chunk => {
+    chunks.push(chunk.data);
+  };
+
+  record.onstop = () => {
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    saveAs(blob);
+  };
+
+  /* Set a maximum time for recording */
+  setTimeout(() => {
+    record.stop();
+  }, 60 * 1000);
 };
 
 exports.stopRecording = function() {
-  console.log(mediaRecorder.state);
+  record.stop();
   console.log('recorder stopped');
 };

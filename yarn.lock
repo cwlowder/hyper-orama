@@ -26,6 +26,10 @@ eventie@^1:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/eventie/-/eventie-1.0.6.tgz#d4ffc8b0c2b5e493c2aa1b22cbe918d3aee74437"
 
+file-saver@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/file-saver/-/file-saver-2.0.1.tgz#7fe2242af1cbc559a29d8176078a8b56d781fa79"
+
 iconv-lite@^0.4.8:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -43,3 +47,7 @@ now@^14.0.0:
 sync-exec@~0.6.x:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/sync-exec/-/sync-exec-0.6.2.tgz#717d22cc53f0ce1def5594362f3a89a2ebb91105"
+
+video-stream-merger@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/video-stream-merger/-/video-stream-merger-3.0.2.tgz#832dd09c8189e23cf22bdeaf0883240a897f88c6"
