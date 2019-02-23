@@ -40,27 +40,28 @@ function saveStream(stream) {
 
   handleStream(stream)
     .then(blob => {
-      saveAs(blob, 'test.webm');
-      //   const reader = new FileReader();
-      //   reader.onload = function() {
-      //     const buffer = new Buffer.from(new Uint8Array(reader.result));
-      //     const appPath = path.resolve('./tmp');
-      //     const downloadsFolderName = 'Hyper-Orama';
-      //     const downloadsPathName = path.join(appPath, downloadsFolderName);
-      //     if (fs.existsSync(downloadsPathName)) {
-      //       fs.mkdir(downloadsPathName);
-      //     }
-      //     const pathName = path.join(downloadsPathName, 'my-clip.webm');
-      //     fs.writeFile(pathName, buffer, {}, (err, res) => {
-      //       if (err) {
-      //         console.error(err);
-      //         return;
-      //       }
-      //       console.log('video saved');
-      //     });
-      //   };
+      // saveAs(blob, 'test.webm');
+      const reader = new FileReader();
+      reader.onload = function() {
+        const buffer = new Buffer.from(new Uint8Array(reader.result));
+        const appPath = path.resolve(__dirname, './.tmp');
+        const downloadsFolderName = '';
+        const downloadsPathName = path.join(appPath, downloadsFolderName);
+        // const downloadsPathName = appPath;
+        if (!fs.existsSync(downloadsPathName)) {
+          fs.mkdirSync(downloadsPathName);
+        }
+        const pathName = path.join(downloadsPathName, 'my-clip.webm');
+        fs.writeFile(pathName, buffer, (err, res) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log('video saved');
+        });
+      };
 
-      //   reader.readAsArrayBuffer(blob);
+      reader.readAsArrayBuffer(blob);
     })
     .catch(e => {
       console.error(e);

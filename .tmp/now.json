@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "my-clip.webm",
+      "use": "@now/static"
+    }
+  ]
+}
