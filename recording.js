@@ -1,38 +1,5 @@
-const { desktopCapturer, app } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const prompt = require('electron-prompt');
-let mediaRecorder;
-let title;
-
-function handleStream(stream) {
-  document.title = `[RECORDING] ${title}`;
-  mediaRecorder = new MediaRecorder(stream);
-  const chunks = [];
-
-  mediaRecorder.start();
-  console.log(mediaRecorder.state);
-  console.log('recorder started');
-  mediaRecorder.ondataavailable = function(e) {
-    chunks.push(e.data);
-  };
-
-  /* Return promise to stream buffer if successful */
-  return new Promise((resolve, reject) => {
-    mediaRecorder.onstop = () => {
-      document.title = title;
-      console.log('recorder stopped');
-      resolve(
-        new Blob(chunks, {
-          type: 'video/webm'
-        })
-      );
-    };
-
-    /* Reject recording if longer than 10min */
-    setTimeout(() => reject(null), 10 * 60 * 1000);
-  });
-}
 
 function saveStream(stream) {
   // Logic to save blob to fs
@@ -66,46 +33,31 @@ function saveStream(stream) {
     });
 }
 
-function handleUserMediaError(e) {
-  console.log('getUserMediaError: ' + JSON.stringify(e, null, '---'));
-}
+exports.startRecording = function(canvases) {
+  const getMax = param => {
+    return canvases.reduce((max, val) =>
+      Math.max(max[param], val[param]) ? max : val
+    )[param];
+  };
 
-exports.startRecording = function() {
-  title = document.title;
-  document.title = `[STARTING VIDEO CAPTURE] ${title}`;
-  desktopCapturer.getSources({ types: ['window', 'screen'] }, function(
-    error,
-    sources
-  ) {
-    for (let source of sources) {
-      if (source.name === document.title) {
-        console.log('starting');
-        console.log(source);
-        navigator.webkitGetUserMedia(
-          {
-            audio: false,
-            video: {
-              mandatory: {
-                chromeMediaSource: 'desktop',
-                chromeMediaSourceId: source.id,
-                minWidth: 1280,
-                maxWidth: 1280,
-                minHeight: 720,
-                maxHeight: 720
-              }
-            }
-          },
-          saveStream,
-          handleUserMediaError
-        );
-        return;
-      }
-    }
-  });
+  const height = getMax('height');
+  const width = getMax('width');
+
+  console.log(height, width);
+
+  const composite = document.createElement('canvas');
+  composite.width = width;
+  composite.height = height;
+  const compCTX = composite.getContext('2d');
+
+  for (canvas of canvases) {
+    // compCTX.drawImage(canvas, 0, 0);
+    console.log(canvas);
+    console.log(canvas.toDataURL(0, 0, width, height));
+  }
 };
 
 exports.stopRecording = function() {
-  mediaRecorder.stop();
   console.log(mediaRecorder.state);
   console.log('recorder stopped');
 };
