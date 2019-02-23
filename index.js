@@ -2,41 +2,34 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 const { shell } = require("electron");
-var ncp = require("copy-paste");
+const ncp = require("copy-paste");
 const recording = require("./recording");
-console.log('index.js running')
+const del = require('del');
+
 exports.decorateTerms = (Terms, { React, notify }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
-      this.terms = null;
+	  this.terms = null;
+	  this.fileName = `terminal-session-${performance.now()}.webm`
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
-        isRecording: false
+		isRecording: false,
       };
     }
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
-        // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, "./.tmp");
-        const fileName = "my-clip.webm";
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
 
-        // Write the target file to disk
-        fs.writeFileSync(
-          dir + "/" + fileName,
-          "hello i am not a secret chicken 🐔",
-          "utf8"
-        );
-
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: fileName, use: "@now/static" }]
+          builds: [{ src: this.fileName, use: "@now/static" }]
         };
 
         fs.writeFileSync(
@@ -44,15 +37,17 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           JSON.stringify(nowConfig, null, 2),
           "utf8"
         );
-        console.log(__dirname);
+		const pathToTmp = path.resolve(__dirname, "./.tmp/")
         var child = spawn(
           path.resolve(__dirname, "./node_modules/now/download/dist/now"),
-          [path.resolve(__dirname, "./.tmp/")]
+          [pathToTmp]
         );
 
         child.stdout.on("data", data => {
-          console.log(`stdout: ${data}`);
-          this._notifyVideoUploaded(data);
+		  console.log(`stdout: ${data}`);
+		  
+		  this._notifyVideoUploaded(`${data}/${this.fileName}`);
+		
         });
 
         child.stderr.on("data", data => {
@@ -60,15 +55,13 @@ exports.decorateTerms = (Terms, { React, notify }) => {
         });
 
         child.on("close", code => {
-          console.log(`child process exited with code ${code}`);
+		  console.log(`child process exited with code ${code}`);
+		  del(pathToTmp, { force: true})
         });
       }
     }
 
     _notifyVideoUploaded(nowVideo) {
-      console.log("RUNNING!!!!!!!!!!!!!!!!!!!!" + nowVideo);
-      this.setState({ deployedUrl: nowVideo });
-
       ncp.copy(nowVideo);
 
       let videoNotification = new Notification('Your "video" is online at', {
@@ -92,7 +85,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
-            recording.startRecording();
+            recording.startRecording(this.fileName);
           } else {
             recording.stopRecording();
           }
