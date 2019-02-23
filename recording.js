@@ -1,7 +1,6 @@
 const { desktopCapturer, app } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const saveAs = require('file-saver').saveAs;
 const prompt = require('electron-prompt');
 let mediaRecorder;
 let title;

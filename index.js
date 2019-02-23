@@ -4,7 +4,7 @@ const { spawn } = require("child_process");
 const { shell } = require("electron");
 var ncp = require("copy-paste");
 const recording = require("./recording");
-
+console.log('index.js running')
 exports.decorateTerms = (Terms, { React, notify }) => {
   return class extends React.Component {
     constructor(props, context) {
