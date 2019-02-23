@@ -10,11 +10,11 @@ exports.decorateTerms = (Terms, { React, notify }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
-      this.terms = null;
+	  this.terms = null;
+	  this.fileName = `terminal-session-${performance.now()}.webm`
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
 		isRecording: false,
-		filename: `terminal-session-${performance.now()}.webm`
       };
     }
 
@@ -29,7 +29,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: this.state.filename, use: "@now/static" }]
+          builds: [{ src: this.fileName, use: "@now/static" }]
         };
 
         fs.writeFileSync(
@@ -46,7 +46,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
 
         child.stdout.on("data", data => {
           console.log(`stdout: ${data}`);
-		  this._notifyVideoUploaded(`${data}/${this.state.filename}`);
+		  this._notifyVideoUploaded(`${data}/${this.fileName}`);
 		
         });
 
@@ -86,7 +86,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
-            recording.startRecording(this.state.filename);
+            recording.startRecording(this.fileName);
           } else {
             recording.stopRecording();
           }
