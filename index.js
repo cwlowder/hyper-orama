@@ -1,18 +1,18 @@
 const fs = require('fs');
 const path = require('path')
-const child_process = require('child_process')
-const shell = require('electron').shell
+const {spawn} = require('child_process')
+const {shell} = require('electron')
 var ncp = require("copy-paste")
 
 exports.decorateTerms = (Terms, {React, notify}) => {
   return class extends React.Component {
+
 	constructor(props, context) {
 		super(props, context);
 		this.terms = null;
 		this.onDecorated = this.onDecorated.bind(this);
 		this.state = {
 			isRecording: false,
-			deployedUrl: "",
 		}
 	}
 
@@ -23,7 +23,7 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 			const fileName = "text.txt"
 
 			if (!fs.existsSync(dir)){
-					fs.mkdirSync(dir);
+				fs.mkdirSync(dir);
 			}
 
 			// Write the target file to disk
@@ -38,24 +38,39 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 			}
 
 			fs.writeFileSync( dir + '/now.json', JSON.stringify(nowConfig, null, 2), 'utf8')	
+			console.log(__dirname)
+			var child = spawn(path.resolve(__dirname,'./node_modules/now/download/dist/now'), [ path.resolve(__dirname,'./.tmp/')]);
 
-			// Run `now`
-			/** @todo handle the case where a user isn't logged in */
-			child_process.execSync(
-				path.join(__dirname, `node_modules/.bin/now ${path.join(__dirname, '.tmp')} > ${path.join(__dirname, '.tmp/CHICKENS.txt')}`), 
-				{ stdio: 'inherit'}
-			);
+			child.stdout.on('data', (data) => {
+				console.log(`stdout: ${data}`)
+				this._notifyVideoUploaded(data)
+			})
 
-			// Get the output of `now`
-			const nowVideo = fs.readFileSync(path.join(__dirname, '.tmp/CHICKENS.txt'), 'utf8') + "/" + fileName
-			this.setState({ deployedUrl: nowVideo })
+			child.stderr.on('data', (data) => {
+				console.log(`stderr: ${data}`);
+			});
 
-			ncp.copy(nowVideo)
+			child.on('close', (code) => {
+				console.log(`child process exited with code ${code}`);
+			});
+
 			
-			this.timeOutId = setTimeout(() => {
-				this.setState({deployedUrl: ""})
-			}, 5000)
 			
+		}
+	}
+
+	_notifyVideoUploaded(nowVideo) {
+		console.log("RUNNING!!!!!!!!!!!!!!!!!!!!" + nowVideo)
+		this.setState({ deployedUrl: nowVideo })
+
+		ncp.copy(nowVideo)
+
+		let videoNotification = new Notification('Your "video" is online at', {
+			body: nowVideo
+		})
+		
+		videoNotification.onclick = () => {
+			shell.openExternal(nowVideo)
 		}
 	}
 
@@ -103,23 +118,8 @@ exports.decorateTerms = (Terms, {React, notify}) => {
 					boxShadow: '0 0 5px red',
 					backgroundColor: 'red',
 				}
-			}), 
-			React.createElement('style', {key: 3}, `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`),
-			this.state.deployedUrl && React.createElement(
-				'div', 
-				{
-					style: {
-						position: 'fixed', 
-						bottom: 16, 
-						right: 16, 
-						backgroundColor: 'black', 
-						color: 'white',
-						'zIndex': 100000000,
-					},
-					onClick: () => shell.openExternal(this.state.deployedUrl)
-				},
-				`Your "video" is online at ${this.state.deployedUrl}`
-			)
+			}),
+			React.createElement('style', {key: 3}, `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`)
 		];
 	}
   }
