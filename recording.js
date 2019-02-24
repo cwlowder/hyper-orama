@@ -1,7 +1,6 @@
-const { desktopCapturer, app } = require('electron');
+const { desktopCapturer } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const prompt = require('electron-prompt');
 let mediaRecorder;
 let title;
 
@@ -11,8 +10,6 @@ function handleStream(stream) {
   const chunks = [];
 
   mediaRecorder.start();
-  console.log(mediaRecorder.state);
-  console.log('recorder started');
   mediaRecorder.ondataavailable = function(e) {
     chunks.push(e.data);
   };
@@ -21,11 +18,10 @@ function handleStream(stream) {
   return new Promise((resolve, reject) => {
     mediaRecorder.onstop = () => {
       document.title = title;
-      console.log('recorder stopped');
       resolve(
         new Blob(chunks, {
-          type: 'video/webm'
-        })
+          type: 'video/webm',
+        }),
       );
     };
 
@@ -34,54 +30,44 @@ function handleStream(stream) {
   });
 }
 
-function saveStream(fileName) { return function reallySaveStream(stream) {
-  // Logic to save blob to fs
+function saveStream(fileName) {
+  return function reallySaveStream(stream) {
+    // Logic to save blob to fs
 
-  handleStream(stream)
-    .then(blob => {
-      const reader = new FileReader();
-      reader.onload = function() {
-        const buffer = new Buffer.from(new Uint8Array(reader.result));
-        const appPath = path.resolve(__dirname, './.tmp');
-        const downloadsFolderName = '';
-        const downloadsPathName = path.join(appPath, downloadsFolderName);
-        // const downloadsPathName = appPath;
-        if (!fs.existsSync(downloadsPathName)) {
-          fs.mkdirSync(downloadsPathName);
-        }
-        const pathName = path.join(downloadsPathName, fileName);
-        fs.writeFile(pathName, buffer, (err, res) => {
-          if (err) {
-            console.error(err);
-            return;
+    handleStream(stream)
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onload = function() {
+          const buffer = new Buffer.from(new Uint8Array(reader.result));
+          const appPath = path.resolve(__dirname, './.tmp');
+          const downloadsFolderName = '';
+          const downloadsPathName = path.join(appPath, downloadsFolderName);
+          // const downloadsPathName = appPath;
+          if (!fs.existsSync(downloadsPathName)) {
+            fs.mkdirSync(downloadsPathName);
           }
-          console.log('video saved');
-        });
-      };
+          const pathName = path.join(downloadsPathName, fileName);
+          fs.writeFile(pathName, buffer, err => {
+            if (err) {
+              return;
+            }
+          });
+        };
 
-      reader.readAsArrayBuffer(blob);
-    })
-    .catch(e => {
-      console.error(e);
-    });
-}
+        reader.readAsArrayBuffer(blob);
+      })
+      .catch(() => {});
+  };
 }
 
-function handleUserMediaError(e) {
-  console.log('getUserMediaError: ' + JSON.stringify(e, null, '---'));
-}
+function handleUserMediaError() {}
 
 exports.startRecording = function(fileName) {
   title = document.title;
   document.title = `[STARTING VIDEO CAPTURE] ${title}`;
-  desktopCapturer.getSources({ types: ['window', 'screen'] }, function(
-    error,
-    sources
-  ) {
+  desktopCapturer.getSources({ types: ['window', 'screen'] }, function(error, sources) {
     for (let source of sources) {
       if (source.name === document.title) {
-        console.log('starting');
-        console.log(source);
         navigator.webkitGetUserMedia(
           {
             audio: false,
@@ -92,12 +78,12 @@ exports.startRecording = function(fileName) {
                 minWidth: 1280,
                 maxWidth: 1280,
                 minHeight: 720,
-                maxHeight: 720
-              }
-            }
+                maxHeight: 720,
+              },
+            },
           },
           saveStream(fileName),
-          handleUserMediaError
+          handleUserMediaError,
         );
         return;
       }
@@ -107,6 +93,4 @@ exports.startRecording = function(fileName) {
 
 exports.stopRecording = function() {
   mediaRecorder.stop();
-  console.log(mediaRecorder.state);
-  console.log('recorder stopped');
 };
