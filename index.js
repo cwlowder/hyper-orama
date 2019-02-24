@@ -116,7 +116,9 @@ exports.decorateTerms = (Terms, { React }) => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
+            this.titleElement = document.querySelector('header');
             recording.startRecording(this.state.canvases, this.fileName);
+
           } else {
             recording.stopRecording();
           }
@@ -129,7 +131,10 @@ exports.decorateTerms = (Terms, { React }) => {
     }
 
     render() {
-      const titleElement = document.querySelector('.header_appTitle');
+      const relativeLeft =
+        document.querySelector('.header_appTitle') ||
+        document.querySelector('.tabs_title');
+
       return React.createElement(
         'div',
         null,
@@ -146,10 +151,19 @@ exports.decorateTerms = (Terms, { React }) => {
               animation: 'blink-motion 1s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: titleElement
-                ? titleElement.getBoundingClientRect().top + 2
+              top: document.querySelector('.header_windowHeader')
+                ? document
+                    .querySelector('.header_windowHeader')
+                    .getBoundingClientRect().height / 2
+                : this.titleElement
+                ? this.titleElement.getBoundingClientRect().height / 2
                 : 'initial',
-              left: titleElement ? titleElement.offsetLeft - 16 : 'initial',
+              transform: 'translateY(-50%)',
+              left: relativeLeft
+                ? relativeLeft.getBoundingClientRect().left - 16
+                : this.titleElement
+                ? this.titleElement.getBoundingClientRect().width / 2
+                : 'initial',
               width: 9,
               height: 9,
               border: '1px solid black',
@@ -160,7 +174,14 @@ exports.decorateTerms = (Terms, { React }) => {
         React.createElement(
           'style',
           null,
-          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`,
+          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }
+		  
+		  .tabs_title {
+		  display: block;
+		  width: fit-content;
+		  margin: 0 auto !important;
+		  padding: 0 !important;
+		  } `,
         ),
       );
     }
