@@ -50,7 +50,7 @@ exports.startRecording = function(canvases) {
 
   /* Gram tracks from canvases */
   const chunks = new Array();
-  const fps = 25;
+  const fps = 10;
   const textStream = canvases[2].captureStream(fps);
   const cursorStream = canvases[1].captureStream(fps);
 
@@ -87,14 +87,11 @@ exports.startRecording = function(canvases) {
   };
 
   record.onstop = () => {
+    console.log('recording stopped');
+    merger.destroy();
     const blob = new Blob(chunks, { type: 'video/webm' });
     saveAs(blob);
   };
-
-  /* Set a maximum time for recording */
-  setTimeout(() => {
-    record.stop();
-  }, 60 * 1000);
 };
 
 exports.stopRecording = function() {
