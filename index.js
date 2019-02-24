@@ -35,7 +35,31 @@ exports.decorateTerms = (Terms, { React }) => {
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
+        canvases: [],
       };
+    }
+
+    componentDidMount() {
+      const { document } = window;
+
+      /**
+       * Grabs the terminal canvases for recording
+       */
+      const canvasListener = () => {
+        const canvasCollection = document.querySelectorAll(
+          '.xterm-screen canvas',
+        );
+        if (canvasCollection.length >= 3) {
+          const canvases = new Array();
+          document.body.removeEventListener(
+            'DOMSubtreeModified',
+            canvasListener,
+          );
+          for (let canvas of canvasCollection) canvases.push(canvas);
+          this.setState({ ...this.state, canvases });
+        }
+      };
+      document.body.addEventListener('DOMSubtreeModified', canvasListener);
     }
 
     componentDidUpdate(_, prevState) {
@@ -53,10 +77,11 @@ exports.decorateTerms = (Terms, { React }) => {
         };
 
         fs.writeFileSync(
-          dir + '/now.json',
+          path.join(dir, '/now.json'),
           JSON.stringify(nowConfig, null, 2),
           'utf8',
         );
+
         const pathToTmp = path.resolve(__dirname, './.tmp/');
         var child = spawn(
           path.resolve(__dirname, './node_modules/now/download/dist/now'),
@@ -76,7 +101,7 @@ exports.decorateTerms = (Terms, { React }) => {
     _notifyVideoUploaded(nowVideo) {
       ncp.copy(nowVideo);
       window.store.dispatch(
-        addNotificationMessage('Your video is online at', nowVideo, true),
+        addNotificationMessage('Your video is online', nowVideo, true),
       );
     }
 
@@ -86,14 +111,14 @@ exports.decorateTerms = (Terms, { React }) => {
 
     onDecorated(terms) {
       this.terms = terms;
-
       this.terms.registerCommands({
         'window:togglerecord': e => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
             this.titleElement = document.querySelector('header');
-            recording.startRecording(this.fileName);
+            recording.startRecording(this.state.canvases, this.fileName);
+
           } else {
             recording.stopRecording();
           }
