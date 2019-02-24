@@ -43,9 +43,7 @@ exports.decorateTerms = (Terms, { React }) => {
     componentDidMount() {
       const { document } = window;
 
-      /**
-       * Grabs the terminal canvases for recording
-       */
+      // Grabs the terminal canvases for recording
       const canvasListener = () => {
         const canvasCollection = document.querySelectorAll(
           '.xterm-screen canvas',
@@ -94,15 +92,16 @@ exports.decorateTerms = (Terms, { React }) => {
         });
 
         child.on('close', () => {
-          del(pathToTmp, { force: true });
+          del(pathToTmp, { force: true }); // deletes tmp folder after upload
         });
       }
     }
 
     _notifyVideoUploaded(nowVideo) {
       this.setState({ isLoading: false });
-      ncp.copy(nowVideo);
+      ncp.copy(nowVideo); // copies link to clipboard (Mac's only)
       window.store.dispatch(
+        // sents a redux action, to send out noification
         addNotificationMessage('Your video is online', nowVideo, true),
       );
     }
@@ -120,7 +119,6 @@ exports.decorateTerms = (Terms, { React }) => {
           if (!this.state.isRecording) {
             this.titleElement = document.querySelector('header');
             recording.startRecording(this.state.canvases, this.fileName);
-
           } else {
             recording.stopRecording();
             this.setState({ isLoading: true });
@@ -129,7 +127,6 @@ exports.decorateTerms = (Terms, { React }) => {
         },
       });
 
-      // Don't forget to propagate it to HOC chain
       if (this.props.onDecorated) this.props.onDecorated(terms);
     }
 
@@ -194,26 +191,30 @@ exports.decorateTerms = (Terms, { React }) => {
         React.createElement(
           'style',
           null,
-          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; }  }
-		  
-		  .tabs_title {
-		  display: block;
-		  width: fit-content;
-		  margin: 0 auto !important;
-		  padding: 0 !important;
-		  } `,
+          `@keyframes blink-motion {
+            0% { opacity: .1; }
+            50% { opacity: 1; }
+            100% { opacity: 0.1; }
+          }
+          .tabs_title {
+            display: block;
+            width: fit-content;
+            margin: 0 auto !important;
+            padding: 0 !important;
+          }`,
         ),
         React.createElement(
           'style',
           null,
-          `@keyframes load-motion {0% {transform:rotateY(360deg)} }
-		  
-		  .tabs_title {
-		  display: block;
-		  width: fit-content;
-		  margin: 0 auto !important;
-		  padding: 0 !important;
-		  } `,
+          `@keyframes load-motion {
+            0% { transform:rotateY(360deg) }
+          }
+          .tabs_title {
+            display: block;
+            width: fit-content;
+            margin: 0 auto !important;
+            padding: 0 !important;
+          }`,
         ),
       );
     }
