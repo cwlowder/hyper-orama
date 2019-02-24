@@ -1,39 +1,33 @@
-const VideoStreamMerger = require('video-stream-merger');
+const { spawn } = require('child_process');
+
 const path = require('path');
 const fs = require('fs');
 
-const saveAs = require('file-saver').saveAs;
+let recordText = null;
+let recordCursor = null;
 
-let record = null;
+function save(fileName, data) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    console.log("FUCK YOU")
+    const buffer = new Buffer.from(reader.result);
+   
+    const pathName = path.resolve(__dirname,'./.tmp')
+    console.log(pathName)
 
-function saveStream(fileName) {
-  return function reallySaveStream(stream) {
-    // Logic to save blob to fs
-
-    handleStream(stream)
-      .then(blob => {
-        const reader = new FileReader();
-        reader.onload = function() {
-          const buffer = new Buffer.from(new Uint8Array(reader.result));
-          const appPath = path.resolve(__dirname, './.tmp');
-          const downloadsFolderName = '';
-          const downloadsPathName = path.join(appPath, downloadsFolderName);
-          // const downloadsPathName = appPath;
-          if (!fs.existsSync(downloadsPathName)) {
-            fs.mkdirSync(downloadsPathName);
-          }
-          const pathName = path.join(downloadsPathName, fileName);
-          fs.writeFile(pathName, buffer, err => {
-            if (err) {
-              return;
-            }
-          });
-        };
-
-        reader.readAsArrayBuffer(blob);
-      })
-      .catch(() => {});
-  };
+    if (!fs.existsSync(pathName)) {
+      fs.mkdirSync(pathName);
+    }
+    const destName = path.join(pathName, fileName);
+    fs.writeFile(destName, buffer, {}, (err,res) => {
+      if (err) {
+        console.log("ERROR FUCK YOU")
+        return;
+      }
+      console.log("FILE " + fileName + " SAVED!")
+    });
+  }
+  reader.readAsArrayBuffer(data);
 }
 
 exports.startRecording = function(canvases) {
@@ -47,52 +41,60 @@ exports.startRecording = function(canvases) {
   const width = getMax('width');
 
   /* Gram tracks from canvases */
-  const chunks = new Array();
   const fps = 10;
-  const textStream = canvases[2].captureStream(fps);
-  const cursorStream = canvases[1].captureStream(fps);
+  var textChunks = [];
+  var cursorChunks = [];
+  textStream = canvases[2].captureStream(fps);
+  cursorStream = canvases[1].captureStream(fps);
 
+  recordText = new MediaRecorder(textStream)
+  recordCursor = new MediaRecorder(cursorStream)
+  recordText.start(fps)
+  recordCursor.start(fps)
   /* Merge tracks into a single stream */
-  let stream;
-  const merger = new VideoStreamMerger({
-    width,
-    height,
-    fps,
-    clearRect: false
-  });
-  merger.addStream(textStream, {
-    x: 0,
-    y: 0,
-    width,
-    height,
-    mute: true
-  });
-  merger.addStream(cursorStream, {
-    x: 0,
-    y: 0,
-    width,
-    height,
-    mute: true
-  });
-  merger.start();
-  stream = merger.result;
 
-  record = new MediaRecorder(stream);
-  record.start();
 
-  record.ondataavailable = chunk => {
-    chunks.push(chunk.data);
+  recordText.ondataavailable = chunk => {
+    console.log("TEXT")
+    textChunks.push(chunk.data);
+  };
+  recordCursor.ondataavailable = chunk => {
+    console.log("CURSOR")
+    cursorChunks.push(chunk.data);
   };
 
-  record.onstop = () => {
+  recordText.onstop = () => {
     console.log('recording stopped');
-    merger.destroy();
-    const blob = new Blob(chunks, { type: 'video/webm' });
-    saveAs(blob);
+    const blob = new Blob(textChunks, { type: 'video/webm' });
+    save('text.webm',blob);
+  };
+  recordCursor.onstop = () => {
+    console.log('recording stopped');
+    const blob = new Blob(cursorChunks, { type: 'video/webm' });
+    save('cursor.webm',blob);
   };
 };
 
 exports.stopRecording = function() {
-  record.stop();
+  recordText.stop();
+  recordCursor.stop();
+
   console.log('recorder stopped');
+  const pathName = path.resolve(__dirname,'./.tmp')
+
+  const textFile = path.join(pathName, 'text.webm')
+  const cursorFile = path.join(pathName, 'cursor.webm')
+  const outFile = path.join(pathName, 'out.webm')
+
+  setTimeout(()=>{
+   console.log('SAVING vid.webm')
+
+   `ffmpeg -i .\text.webm -i .\cursor.webm -filter_complex "[1:v]colorkey=0x000000:1:0[ckout];[0:v][ckout]overlay[out]" -map '[out]' .\out.webm -y`
+   var args = `-i ${textFile} -i ${cursorFile} -filter_complex \"[1:v]colorkey=0x000000:.9:.2[ckout];[0:v][ckout]overlay[out]\" -map '[out]' ${outFile} -y`.split(' ')
+   console.log(args)
+   var child = spawn(
+        'ffmpeg',
+        args
+      );
+  }, 100);
 };

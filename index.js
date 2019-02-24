@@ -62,7 +62,7 @@ exports.decorateTerms = (Terms, { React }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: fileName, use: '@now/static' }]
+          builds: [{ src: '*.webm', use: '@now/static' }]
         };
 
         fs.writeFileSync(
