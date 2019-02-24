@@ -58,6 +58,8 @@ exports.decorateTerms = (Terms, { React }) => {
           this.setState({ ...this.state, canvases });
         }
       };
+      // Manually fire listener for soft resets
+      canvasListener();
       document.body.addEventListener('DOMSubtreeModified', canvasListener);
     }
 
@@ -86,13 +88,16 @@ exports.decorateTerms = (Terms, { React }) => {
           path.resolve(__dirname, './node_modules/now/download/dist/now'),
           [pathToTmp],
         );
-
+        let worked = false;
         child.stdout.on('data', data => {
+          worked = true;
           this._notifyVideoUploaded(`${data}/${this.fileName}`);
         });
 
         child.on('close', () => {
-          del(pathToTmp, { force: true }); // deletes tmp folder after upload
+          if (worked) del(pathToTmp, { force: true });
+          // deletes tmp folder after upload
+          else this._notifyNowLoggedout(this.fileName);
         });
       }
     }
@@ -106,16 +111,36 @@ exports.decorateTerms = (Terms, { React }) => {
       );
     }
 
+    _notifyNowLoggedout(fileName) {
+      const dir = path.resolve(__dirname, './.tmp');
+      this.setState({ isLoading: false });
+      window.store.dispatch(
+        // sents a redux action, to send out noification
+        addNotificationMessage(
+          'Could not connect to now, saved video under',
+          path.join(dir, fileName),
+          true,
+        ),
+      );
+    }
+
     componentWillUnmount() {
       clearTimeout(this.timeOutId);
     }
 
     onDecorated(terms) {
+      if (this.props.onDecorated) this.props.onDecorated(terms);
+
+      if (!terms) {
+        return;
+      }
       this.terms = terms;
       this.terms.registerCommands({
         'window:togglerecord': e => {
           // e parameter is React key event
           e.preventDefault();
+          // Ignore key command when in loading state
+          if (this.state.isLoading) return;
           if (!this.state.isRecording) {
             this.titleElement = document.querySelector('header');
             recording.startRecording(this.state.canvases, this.fileName);
@@ -126,8 +151,6 @@ exports.decorateTerms = (Terms, { React }) => {
           this.setState(prevState => ({ isRecording: !prevState.isRecording }));
         },
       });
-
-      if (this.props.onDecorated) this.props.onDecorated(terms);
     }
 
     render() {
