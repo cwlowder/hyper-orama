@@ -1,12 +1,20 @@
-const fs = require('fs');
-const path = require('path');
-const { spawn } = require('child_process');
-const { shell } = require('electron');
-const ncp = require('copy-paste');
-const recording = require('./recording');
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
+const ncp = require("copy-paste");
+const recording = require("./recording");
 const del = require('del');
 
-exports.decorateTerms = (Terms, { React }) => {
+function addNotificationMessage(text, url = null, dismissable = true) {
+	return {
+	  type: 'NOTIFICATION_MESSAGE',
+	  text,
+	  url,
+	  dismissable
+	};
+  }
+
+exports.decorateTerms = (Terms, { React, notify }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
@@ -40,8 +48,6 @@ exports.decorateTerms = (Terms, { React }) => {
           this._notifyVideoUploaded(`${data}/${this.fileName}`);
         });
 
-        child.stderr.on('data', () => {});
-
         child.on('close', () => {
           del(pathToTmp, { force: true });
         });
@@ -50,14 +56,7 @@ exports.decorateTerms = (Terms, { React }) => {
 
     _notifyVideoUploaded(nowVideo) {
       ncp.copy(nowVideo);
-
-      let videoNotification = new Notification('Your "video" is online at', {
-        body: nowVideo,
-      });
-
-      videoNotification.onclick = () => {
-        shell.openExternal(nowVideo);
-      };
+		window.store.dispatch(addNotificationMessage('Your video is online at', nowVideo, true));
     }
 
     componentWillUnmount() {
@@ -85,6 +84,7 @@ exports.decorateTerms = (Terms, { React }) => {
     }
 
     render() {
+		const titleElement = document.querySelector('.header_appTitle')
       return React.createElement(
         'div',
         null,
@@ -101,11 +101,11 @@ exports.decorateTerms = (Terms, { React }) => {
               animation: 'blink-motion 1s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: document.querySelector('.header_appTitle')
-                ? document.querySelector('.header_appTitle').getBoundingClientRect().top + 2
+              top: titleElement
+                ? titleElement.getBoundingClientRect().top + 2 
                 : 'initial',
-              left: document.querySelector('.header_appTitle')
-                ? document.querySelector('.header_appTitle').offsetLeft - 16
+              left: titleElement
+                ? titleElement.offsetLeft - 16
                 : 'initial',
               width: 9,
               height: 9,
