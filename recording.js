@@ -195,7 +195,7 @@ exports.startRecording = function(canvases, fileName) {
 
     record.onstop = () => {
       merger.destroy();
-      const blob = new Blob(chunks, { type: 'video/webm' });
+      const blob = new Blob(chunks, { type: 'video/mp4' });
       save(fileName, blob);
     };
   });
