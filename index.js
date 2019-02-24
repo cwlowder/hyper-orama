@@ -35,28 +35,62 @@ exports.decorateTerms = (Terms, { React }) => {
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
+        canvases: [],
       };
+    }
+
+    componentDidMount() {
+      const { document } = window;
+
+      /**
+       * Grabs the terminal canvases for recording
+       */
+      const canvasListener = () => {
+        const canvasCollection = document.querySelectorAll(
+          '.xterm-screen canvas',
+        );
+        if (canvasCollection.length >= 3) {
+          const canvases = new Array();
+          document.body.removeEventListener(
+            'DOMSubtreeModified',
+            canvasListener,
+          );
+          for (let canvas of canvasCollection) canvases.push(canvas);
+          this.setState({ ...this.state, canvases });
+        }
+      };
+      document.body.addEventListener('DOMSubtreeModified', canvasListener);
     }
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
+        // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, './.tmp');
+        const fileName = 'my-clip.webm';
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
 
+        // Write the target file to disk
+        fs.writeFileSync(
+          dir + '/' + fileName,
+          'hello i am not a secret chicken 🐔',
+          'utf8',
+        );
+
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: this.fileName, use: '@now/static' }],
+          builds: [{ src: fileName, use: '@now/static' }],
         };
 
         fs.writeFileSync(
-          dir + '/now.json',
+          path.join(dir, '/now.json'),
           JSON.stringify(nowConfig, null, 2),
           'utf8',
         );
+
         const pathToTmp = path.resolve(__dirname, './.tmp/');
         var child = spawn(
           path.resolve(__dirname, './node_modules/now/download/dist/now'),
@@ -86,13 +120,12 @@ exports.decorateTerms = (Terms, { React }) => {
 
     onDecorated(terms) {
       this.terms = terms;
-
       this.terms.registerCommands({
         'window:togglerecord': e => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
-            recording.startRecording(this.fileName);
+            recording.startRecording(this.state.canvases);
           } else {
             recording.stopRecording();
           }
