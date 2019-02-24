@@ -65,25 +65,16 @@ exports.decorateTerms = (Terms, { React }) => {
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
-        // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, './.tmp');
-        const fileName = 'my-clip.webm';
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
 
-        // Write the target file to disk
-        fs.writeFileSync(
-          dir + '/' + fileName,
-          'hello i am not a secret chicken 🐔',
-          'utf8',
-        );
-
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: fileName, use: '@now/static' }],
+          builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
         fs.writeFileSync(
@@ -112,7 +103,7 @@ exports.decorateTerms = (Terms, { React }) => {
       this.setState({ isLoading: false });
       ncp.copy(nowVideo);
       window.store.dispatch(
-        addNotificationMessage('Your video is online at', nowVideo, true),
+        addNotificationMessage('Your video is online', nowVideo, true),
       );
     }
 
@@ -127,7 +118,9 @@ exports.decorateTerms = (Terms, { React }) => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
-            recording.startRecording(this.state.canvases);
+            this.titleElement = document.querySelector('header');
+            recording.startRecording(this.state.canvases, this.fileName);
+
           } else {
             recording.stopRecording();
             this.setState({ isLoading: true });
@@ -141,7 +134,10 @@ exports.decorateTerms = (Terms, { React }) => {
     }
 
     render() {
-      const titleElement = document.querySelector('.header_appTitle');
+      const relativeLeft =
+        document.querySelector('.header_appTitle') ||
+        document.querySelector('.tabs_title');
+
       return React.createElement(
         'div',
         null,
@@ -158,10 +154,19 @@ exports.decorateTerms = (Terms, { React }) => {
               animation: 'blink-motion 1s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: titleElement
-                ? titleElement.getBoundingClientRect().top + 2
+              top: document.querySelector('.header_windowHeader')
+                ? document
+                    .querySelector('.header_windowHeader')
+                    .getBoundingClientRect().height / 2
+                : this.titleElement
+                ? this.titleElement.getBoundingClientRect().height / 2
                 : 'initial',
-              left: titleElement ? titleElement.offsetLeft - 16 : 'initial',
+              transform: 'translateY(-50%)',
+              left: relativeLeft
+                ? relativeLeft.getBoundingClientRect().left - 16
+                : this.titleElement
+                ? this.titleElement.getBoundingClientRect().width / 2
+                : 'initial',
               width: 9,
               height: 9,
               border: '1px solid black',
@@ -176,10 +181,10 @@ exports.decorateTerms = (Terms, { React }) => {
               animation: 'load-motion 2s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: titleElement
-                ? titleElement.getBoundingClientRect().top + 2
+              top: relativeLeft
+                ? relativeLeft.getBoundingClientRect().top + 2
                 : 'initial',
-              left: titleElement ? titleElement.offsetLeft - 16 : 'initial',
+              left: relativeLeft ? relativeLeft.offsetLeft - 16 : 'initial',
               width: 9,
               height: 9,
               border: '1px solid black',
@@ -189,12 +194,26 @@ exports.decorateTerms = (Terms, { React }) => {
         React.createElement(
           'style',
           null,
-          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`,
+          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; }  }
+		  
+		  .tabs_title {
+		  display: block;
+		  width: fit-content;
+		  margin: 0 auto !important;
+		  padding: 0 !important;
+		  } `,
         ),
         React.createElement(
           'style',
           null,
-          `@keyframes load-motion {0% {transform:rotateY(360deg)}`,
+          `@keyframes load-motion {0% {transform:rotateY(360deg)} }
+		  
+		  .tabs_title {
+		  display: block;
+		  width: fit-content;
+		  margin: 0 auto !important;
+		  padding: 0 !important;
+		  } `,
         ),
       );
     }

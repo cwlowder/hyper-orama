@@ -134,7 +134,7 @@ function generateFrame(width, height, padding) {
   });
 }
 
-exports.startRecording = function(canvases) {
+exports.startRecording = function(canvases, fileName) {
   const getMax = param => {
     return canvases.reduce((max, val) =>
       Math.max(max[param], val[param]) ? max : val,
@@ -196,7 +196,7 @@ exports.startRecording = function(canvases) {
     record.onstop = () => {
       merger.destroy();
       const blob = new Blob(chunks, { type: 'video/webm' });
-      save('my-clip.webm', blob);
+      save(fileName, blob);
     };
   });
 };
