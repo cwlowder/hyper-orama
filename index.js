@@ -6,147 +6,156 @@ const recording = require('./recording');
 const del = require('del');
 
 exports.reduceUI = (state, action) => {
-  switch (action.type) {
-    case 'CONFIG_LOAD':
-    case 'CONFIG_RELOAD': {
-      const config = action.config.hyperOrama;
-      return state.set('hyperOrama', config);
-    }
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case 'CONFIG_LOAD':
+		case 'CONFIG_RELOAD': {
+			const config = action.config.hyperOrama;
+			return state.set('hyperOrama', config);
+		}
+		default:
+			return state;
+	}
 };
 
 function addNotificationMessage(text, url = null, dismissable = true) {
-  return {
-    type: 'NOTIFICATION_MESSAGE',
-    text,
-    url,
-    dismissable,
-  };
+	return {
+		type: 'NOTIFICATION_MESSAGE',
+		text,
+		url,
+		dismissable,
+	};
 }
 
 exports.decorateTerms = (Terms, { React }) => {
-  return class extends React.Component {
-    constructor(props, context) {
-      super(props, context);
-      this.terms = null;
-      this.fileName = `terminal-session-${performance.now()}.webm`;
-      this.onDecorated = this.onDecorated.bind(this);
-      this.state = {
-        isRecording: false,
-      };
-    }
+	return class extends React.Component {
+		constructor(props, context) {
+			super(props, context);
+			this.terms = null;
+			this.fileName = `terminal-session-${performance.now()}.webm`;
+			this.onDecorated = this.onDecorated.bind(this);
+			this.state = {
+				isRecording: false,
+			};
+		}
 
-    componentDidUpdate(_, prevState) {
-      if (!this.state.isRecording && prevState.isRecording) {
-        const dir = path.resolve(__dirname, './.tmp');
+		componentDidUpdate(_, prevState) {
+			if (!this.state.isRecording && prevState.isRecording) {
+				const dir = path.resolve(__dirname, './.tmp');
 
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
+				if (!fs.existsSync(dir)) {
+					fs.mkdirSync(dir);
+				}
 
-        // Write a `now.json` in this directory
-        const nowConfig = {
-          version: 2,
-          builds: [{ src: this.fileName, use: '@now/static' }],
-        };
+				// Write a `now.json` in this directory
+				const nowConfig = {
+					version: 2,
+					builds: [{ src: this.fileName, use: '@now/static' }],
+				};
 
-        fs.writeFileSync(
-          dir + '/now.json',
-          JSON.stringify(nowConfig, null, 2),
-          'utf8',
-        );
-        const pathToTmp = path.resolve(__dirname, './.tmp/');
-        var child = spawn(
-          path.resolve(__dirname, './node_modules/now/download/dist/now'),
-          [pathToTmp],
-        );
+				fs.writeFileSync(
+					dir + '/now.json',
+					JSON.stringify(nowConfig, null, 2),
+					'utf8',
+				);
+				const pathToTmp = path.resolve(__dirname, './.tmp/');
+				var child = spawn(
+					path.resolve(__dirname, './node_modules/now/download/dist/now'),
+					[pathToTmp],
+				);
 
-        child.stdout.on('data', data => {
-          this._notifyVideoUploaded(`${data}/${this.fileName}`);
-        });
+				child.stdout.on('data', data => {
+					this._notifyVideoUploaded(`${data}/${this.fileName}`);
+				});
 
-        child.on('close', () => {
-          del(pathToTmp, { force: true });
-        });
-      }
-    }
+				child.on('close', () => {
+					del(pathToTmp, { force: true });
+				});
+			}
+		}
 
-    _notifyVideoUploaded(nowVideo) {
-      ncp.copy(nowVideo);
-      window.store.dispatch(
-        addNotificationMessage('Your video is online at', nowVideo, true),
-      );
-    }
+		_notifyVideoUploaded(nowVideo) {
+			ncp.copy(nowVideo);
+			window.store.dispatch(
+				addNotificationMessage('Your video is online at', nowVideo, true),
+			);
+		}
 
-    componentWillUnmount() {
-      clearTimeout(this.timeOutId);
-    }
 
-    onDecorated(terms) {
-      this.terms = terms;
+		componentWillUnmount() {
+			clearTimeout(this.timeOutId);
+		}
 
-      this.terms.registerCommands({
-        'window:togglerecord': e => {
-          // e parameter is React key event
-          e.preventDefault();
-          if (!this.state.isRecording) {
-            recording.startRecording(this.fileName);
-          } else {
-            recording.stopRecording();
-          }
-          this.setState(prevState => ({ isRecording: !prevState.isRecording }));
-        },
-      });
+		onDecorated(terms) {
+			this.terms = terms;
 
-      // Don't forget to propagate it to HOC chain
-      if (this.props.onDecorated) this.props.onDecorated(terms);
-    }
+			this.terms.registerCommands({
+				'window:togglerecord': e => {
+					// e parameter is React key event
+					e.preventDefault();
+					if (!this.state.isRecording) {
+						recording.startRecording(this.fileName);
+					} else {
+						recording.stopRecording();
+					}
+					this.setState(prevState => ({ isRecording: !prevState.isRecording }));
+				},
+			});
 
-    render() {
-      const titleElement = document.querySelector('.header_appTitle');
-      return React.createElement(
-        'div',
-        null,
-        React.createElement(
-          Terms,
-          Object.assign({}, this.props, {
-            onDecorated: this.onDecorated,
-          }),
-        ),
-        this.state.isRecording &&
-          React.createElement('div', {
-            className: 'IsRecording',
-            style: {
-              animation: 'blink-motion 1s infinite',
-              position: 'absolute',
-              borderRadius: '50%',
-              top: titleElement
-                ? titleElement.getBoundingClientRect().top + 2
-                : 'initial',
-              left: titleElement ? titleElement.offsetLeft - 16 : 'initial',
-              width: 9,
-              height: 9,
-              border: '1px solid black',
-              boxShadow: '0 0 5px red',
-              backgroundColor: 'red',
-            },
-          }),
-        React.createElement(
-          'style',
-          null,
-          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }`,
-        ),
-      );
-    }
-  };
+			// Don't forget to propagate it to HOC chain
+			if (this.props.onDecorated) this.props.onDecorated(terms);
+		}
+
+		render() {
+			const titleElement = document.querySelector('.header_appTitle') || document.querySelector('.tabs_title');
+			return React.createElement(
+				'div',
+				null,
+				React.createElement(
+					Terms,
+					Object.assign({}, this.props, {
+						onDecorated: this.onDecorated,
+					}),
+				),
+				this.state.isRecording &&
+				React.createElement('div', {
+					className: 'IsRecording',
+					style: {
+						animation: 'blink-motion 1s infinite',
+						position: 'absolute',
+						borderRadius: '50%',
+						top: titleElement
+							? titleElement.getBoundingClientRect().height / 2
+							: 'initial',
+						transform: "translateY(-50%)",
+						left: titleElement ? titleElement.getBoundingClientRect().left - 16 : 'initial',
+						width: 9,
+						height: 9,
+						border: '1px solid black',
+						boxShadow: '0 0 5px red',
+						backgroundColor: 'red',
+					},
+				}),
+				React.createElement(
+					'style',
+					null,
+					`@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }
+		  
+		  .tabs_title {
+		  display: block;
+		  width: fit-content;
+		  margin: 0 auto !important;
+		  padding: 0 !important;
+		  } `,
+				),
+			);
+		}
+	};
 };
 
 // Adding Keymaps
 exports.decorateKeymaps = keymaps => {
-  const newKeymaps = {
-    'window:togglerecord': 'ctrl+alt+r',
-  };
-  return Object.assign({}, keymaps, newKeymaps);
+	const newKeymaps = {
+		'window:togglerecord': 'ctrl+alt+r',
+	};
+	return Object.assign({}, keymaps, newKeymaps);
 };
