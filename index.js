@@ -66,7 +66,6 @@ exports.decorateTerms = (Terms, { React }) => {
       if (!this.state.isRecording && prevState.isRecording) {
         // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, './.tmp');
-        const fileName = this.fileName;
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
@@ -75,7 +74,7 @@ exports.decorateTerms = (Terms, { React }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: fileName, use: '@now/static' }],
+          builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
         fs.writeFileSync(
