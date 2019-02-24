@@ -1,6 +1,6 @@
 # Hyper-Orama
 
-A screen recorder for the hyper terminal
+A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now)
 
 ![EXAMPLE-OUT](demo-out.gif)
 
