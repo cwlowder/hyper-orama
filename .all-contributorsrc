@@ -57,6 +57,17 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "kmui2",
+      "name": "Kevin Mui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17896701?v=4",
+      "profile": "http://pages.cs.wisc.edu/~mui/",
+      "contributions": [
+        "code",
+        "review",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7
