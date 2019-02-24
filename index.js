@@ -64,7 +64,6 @@ exports.decorateTerms = (Terms, { React }) => {
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
-        // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, './.tmp');
 
         if (!fs.existsSync(dir)) {
