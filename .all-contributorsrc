@@ -56,6 +56,39 @@
         "ideas",
         "infra",
         "review",
+      ]
+    },
+    {
+      "login": "cwlowder",
+      "name": "Curtis Lowder",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17357997?v=4",
+      "profile": "https://github.com/cwlowder",
+      "contributions": [
+        "doc",
+        "ideas",
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "kmui2",
+      "name": "Kevin Mui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17896701?v=4",
+      "profile": "http://pages.cs.wisc.edu/~mui/",
+      "contributions": [
+        "code",
+        "review",
+      ]
+    },
+    {
+      "login": "rioam2",
+      "name": "Rio Martinez",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/35539750?v=4",
+      "profile": "https://www.linkedin.com/in/rio-martinez/",
+      "contributions": [
+        "code",
+        "design",
+        "bug",
         "test"
       ]
     }
