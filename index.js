@@ -64,25 +64,16 @@ exports.decorateTerms = (Terms, { React }) => {
 
     componentDidUpdate(_, prevState) {
       if (!this.state.isRecording && prevState.isRecording) {
-        // Make a temp working DIRECTORY!!!!!!!!!!
         const dir = path.resolve(__dirname, './.tmp');
-        const fileName = 'my-clip.webm';
 
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
 
-        // Write the target file to disk
-        fs.writeFileSync(
-          dir + '/' + fileName,
-          'hello i am not a secret chicken 🐔',
-          'utf8',
-        );
-
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: fileName, use: '@now/static' }],
+          builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
         fs.writeFileSync(
@@ -110,7 +101,7 @@ exports.decorateTerms = (Terms, { React }) => {
     _notifyVideoUploaded(nowVideo) {
       ncp.copy(nowVideo);
       window.store.dispatch(
-        addNotificationMessage('Your video is online at', nowVideo, true),
+        addNotificationMessage('Your video is online', nowVideo, true),
       );
     }
 
@@ -125,7 +116,7 @@ exports.decorateTerms = (Terms, { React }) => {
           // e parameter is React key event
           e.preventDefault();
           if (!this.state.isRecording) {
-            recording.startRecording(this.state.canvases);
+            recording.startRecording(this.state.canvases, this.fileName);
           } else {
             recording.stopRecording();
           }
