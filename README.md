@@ -40,7 +40,3 @@ After recording, the video will be processed and uploaded. The link will be copi
 The pulsing red light indicates recording in progress, and the white dot indicates upload in progress.
 
 ![EXAMPLE-IN](demo-in.gif)
-
-## Contributing
-
-* _TODO_
