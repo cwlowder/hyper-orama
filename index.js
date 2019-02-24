@@ -126,7 +126,11 @@ exports.decorateTerms = (Terms, { React }) => {
               animation: 'blink-motion 1s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: this.titleElement
+              top: document.querySelector('.header_windowHeader')
+                ? document
+                    .querySelector('.header_windowHeader')
+                    .getBoundingClientRect().height / 2
+                : this.titleElement
                 ? this.titleElement.getBoundingClientRect().height / 2
                 : 'initial',
               transform: 'translateY(-50%)',
