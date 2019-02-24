@@ -9,6 +9,18 @@
   "imageSize": 100,
   "commit": false,
   "contributors": [
+    {
+      "login": "rioam2",
+      "name": "Rio Martinez",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/35539750?v=4",
+      "profile": "https://www.linkedin.com/in/rio-martinez/",
+      "contributions": [
+        "code",
+        "design",
+        "bug",
+        "test"
+      ]
+    }
   ],
   "contributorsPerLine": 7
 }
