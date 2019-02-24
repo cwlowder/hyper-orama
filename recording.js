@@ -134,6 +134,15 @@ function generateFrame(width, height, padding) {
   });
 }
 
+function _getCanvas(canvases, className) {
+  for (var canvas of canvases) {
+    if (canvas.className === className) {
+      return canvas;
+    }
+  }
+  return null;
+}
+
 exports.startRecording = function(canvases, fileName) {
   const getMax = param => {
     return canvases.reduce((max, val) =>
@@ -150,8 +159,13 @@ exports.startRecording = function(canvases, fileName) {
   const fps = 10;
   generateFrame(width, height, framePadding - 50).then(frameCanvas => {
     const frameStream = frameCanvas.captureStream(fps);
-    const textStream = canvases[2].captureStream(fps);
-    const cursorStream = canvases[1].captureStream(fps);
+    const textStream = (
+      _getCanvas(canvases, 'xterm-text-layer') || _getCanvas(canvases, '')
+    ).captureStream(fps);
+    const cursorStream = _getCanvas(
+      canvases,
+      'xterm-cursor-layer',
+    ).captureStream(fps);
 
     /* Merge tracks into a single stream */
     let stream;
