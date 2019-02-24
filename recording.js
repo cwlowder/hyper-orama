@@ -199,8 +199,11 @@ exports.startRecording = function(canvases, fileName) {
 
     merger.start();
     stream = merger.result;
-
-    record = new MediaRecorder(stream);
+    let mimType = 'video/webm';
+    if (MediaRecorder.isTypeSupported('video/mp4')) {
+      mimType = 'video/mp4';
+    }
+    record = new MediaRecorder(stream, { mimType });
     record.start();
 
     record.ondataavailable = chunk => {
