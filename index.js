@@ -48,8 +48,6 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           this._notifyVideoUploaded(`${data}/${this.fileName}`);
         });
 
-        child.stderr.on('data', () => {});
-
         child.on('close', () => {
           del(pathToTmp, { force: true });
         });
@@ -86,6 +84,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
     }
 
     render() {
+		const titleElement = document.querySelector('.header_appTitle')
       return React.createElement(
         'div',
         null,
@@ -102,11 +101,11 @@ exports.decorateTerms = (Terms, { React, notify }) => {
               animation: 'blink-motion 1s infinite',
               position: 'absolute',
               borderRadius: '50%',
-              top: document.querySelector('.header_appTitle')
-                ? document.querySelector('.header_appTitle').getBoundingClientRect().top + 2
+              top: titleElement
+                ? titleElement.getBoundingClientRect().top + 2 
                 : 'initial',
-              left: document.querySelector('.header_appTitle')
-                ? document.querySelector('.header_appTitle').offsetLeft - 16
+              left: titleElement
+                ? titleElement.offsetLeft - 16
                 : 'initial',
               width: 9,
               height: 9,
