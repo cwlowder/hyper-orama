@@ -1,20 +1,32 @@
-const fs = require("fs");
-const path = require("path");
-const { spawn } = require("child_process");
-const ncp = require("copy-paste");
-const recording = require("./recording");
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const ncp = require('copy-paste');
+const recording = require('./recording');
 const del = require('del');
 
-function addNotificationMessage(text, url = null, dismissable = true) {
-	return {
-	  type: 'NOTIFICATION_MESSAGE',
-	  text,
-	  url,
-	  dismissable
-	};
+exports.reduceUI = (state, action) => {
+  switch (action.type) {
+    case 'CONFIG_LOAD':
+    case 'CONFIG_RELOAD': {
+      const config = action.config.hyperOrama;
+      return state.set('hyperOrama', config);
+    }
+    default:
+      return state;
   }
+};
 
-exports.decorateTerms = (Terms, { React, notify }) => {
+function addNotificationMessage(text, url = null, dismissable = true) {
+  return {
+    type: 'NOTIFICATION_MESSAGE',
+    text,
+    url,
+    dismissable,
+  };
+}
+
+exports.decorateTerms = (Terms, { React }) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context);
@@ -40,9 +52,16 @@ exports.decorateTerms = (Terms, { React, notify }) => {
           builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
-        fs.writeFileSync(dir + '/now.json', JSON.stringify(nowConfig, null, 2), 'utf8');
+        fs.writeFileSync(
+          dir + '/now.json',
+          JSON.stringify(nowConfig, null, 2),
+          'utf8',
+        );
         const pathToTmp = path.resolve(__dirname, './.tmp/');
-        var child = spawn(path.resolve(__dirname, './node_modules/now/download/dist/now'), [pathToTmp]);
+        var child = spawn(
+          path.resolve(__dirname, './node_modules/now/download/dist/now'),
+          [pathToTmp],
+        );
 
         child.stdout.on('data', data => {
           this._notifyVideoUploaded(`${data}/${this.fileName}`);
@@ -56,7 +75,9 @@ exports.decorateTerms = (Terms, { React, notify }) => {
 
     _notifyVideoUploaded(nowVideo) {
       ncp.copy(nowVideo);
-		window.store.dispatch(addNotificationMessage('Your video is online at', nowVideo, true));
+      window.store.dispatch(
+        addNotificationMessage('Your video is online at', nowVideo, true),
+      );
     }
 
     componentWillUnmount() {
@@ -84,7 +105,7 @@ exports.decorateTerms = (Terms, { React, notify }) => {
     }
 
     render() {
-		const titleElement = document.querySelector('.header_appTitle')
+      const titleElement = document.querySelector('.header_appTitle');
       return React.createElement(
         'div',
         null,
@@ -102,11 +123,9 @@ exports.decorateTerms = (Terms, { React, notify }) => {
               position: 'absolute',
               borderRadius: '50%',
               top: titleElement
-                ? titleElement.getBoundingClientRect().top + 2 
+                ? titleElement.getBoundingClientRect().top + 2
                 : 'initial',
-              left: titleElement
-                ? titleElement.offsetLeft - 16
-                : 'initial',
+              left: titleElement ? titleElement.offsetLeft - 16 : 'initial',
               width: 9,
               height: 9,
               border: '1px solid black',
