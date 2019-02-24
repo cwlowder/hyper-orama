@@ -1,8 +1,8 @@
 # Hyper-Orama
 
-A screen recorder for the hyper terminal
+A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now)
 
-![EXAMPLE-OUT](https://tmp-j3lhgp7nw.now.sh/terminal-session-632.6999999946565.webm)
+![EXAMPLE-OUT](demo-out.gif)
 
 ## Setup
 
@@ -38,7 +38,7 @@ After recording, the video will be processed and uploaded. The link will be copi
 
 The pulsing red light indicates recording in progress, and the white dot indicates upload in progress.
 
-![EXAMPLE-IN](https://share.pulley.host/nay411.mp4)
+![EXAMPLE-IN](demo-in.gif)
 
 ## Contributing
 
