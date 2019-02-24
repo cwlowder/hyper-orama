@@ -5,6 +5,22 @@ A screen recorder for the hyper terminal. It publishes all captured sessions to 
 
 ![EXAMPLE-OUT](demo-out.gif)
 
+## Usage
+
+```sh
+hyper i hyper-orama
+```
+
+or, in `.hyper.js`:
+
+```json
+// ...
+plugins: [ /* ... */, 'hyper-orama' ]
+// ...
+```
+
+Use `Ctrl+Alt+R` to start/stop recording.
+
 ## Setup
 
 Clone the repository into `~/.hyper-plugins/local/`:
