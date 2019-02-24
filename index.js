@@ -35,6 +35,7 @@ exports.decorateTerms = (Terms, { React }) => {
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
+        isLoading: false,
         canvases: [],
       };
     }
@@ -99,6 +100,7 @@ exports.decorateTerms = (Terms, { React }) => {
     }
 
     _notifyVideoUploaded(nowVideo) {
+      this.setState({ isLoading: false });
       ncp.copy(nowVideo);
       window.store.dispatch(
         addNotificationMessage('Your video is online', nowVideo, true),
@@ -121,6 +123,7 @@ exports.decorateTerms = (Terms, { React }) => {
 
           } else {
             recording.stopRecording();
+            this.setState({ isLoading: true });
           }
           this.setState(prevState => ({ isRecording: !prevState.isRecording }));
         },
@@ -171,10 +174,39 @@ exports.decorateTerms = (Terms, { React }) => {
               backgroundColor: 'red',
             },
           }),
+        this.state.isLoading &&
+          React.createElement('div', {
+            className: 'IsLoading',
+            style: {
+              animation: 'load-motion 2s infinite',
+              position: 'absolute',
+              borderRadius: '50%',
+              top: relativeLeft
+                ? relativeLeft.getBoundingClientRect().top + 2
+                : 'initial',
+              left: relativeLeft ? relativeLeft.offsetLeft - 16 : 'initial',
+              width: 9,
+              height: 9,
+              border: '1px solid black',
+              backgroundColor: 'white',
+            },
+          }),
         React.createElement(
           'style',
           null,
-          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; } }
+          `@keyframes blink-motion { 0% { opacity: .1; } 50% { opacity: 1; } 100% { opacity: 0.1; }  }
+		  
+		  .tabs_title {
+		  display: block;
+		  width: fit-content;
+		  margin: 0 auto !important;
+		  padding: 0 !important;
+		  } `,
+        ),
+        React.createElement(
+          'style',
+          null,
+          `@keyframes load-motion {0% {transform:rotateY(360deg)} }
 		  
 		  .tabs_title {
 		  display: block;
