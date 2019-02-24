@@ -1,0 +1,25 @@
+{
+  "projectName": "hyper-orama",
+  "projectOwner": "cwlowder",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "lpulley",
+      "name": "Logan Pulley",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7193187?v=4",
+      "profile": "https://github.com/lpulley",
+      "contributions": [
+        "doc",
+        "ideas",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
