@@ -10,6 +10,19 @@
   "commit": false,
   "contributors": [
     {
+      "login": "tejasq",
+      "name": "Tejas Kumar",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/9947422?v=4",
+      "profile": "https://twitter.com/tejaskumar_",
+      "contributions": [
+        "eventOrganizing",
+        "ideas",
+        "infra",
+        "review",
+        "test"
+      ]
+    },
+    {
       "login": "lpulley",
       "name": "Logan Pulley",
       "avatar_url": "https://avatars3.githubusercontent.com/u/7193187?v=4",
