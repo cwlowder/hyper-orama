@@ -1,34 +1,45 @@
-# hyper-orama
+# Hyper-Orama
+
 A screen recorder for the hyper terminal
 
-To add this plugin for development in the hyper terminal:
-
+![EXAMPLE-OUT](https://tmp-j3lhgp7nw.now.sh/terminal-session-632.6999999946565.webm)
 
 ## Setup
-For initial setup, follow: https://github.com/zeit/hyper/blob/master/PLUGINS.md#create-a-dev-config-file
 
-  *MAC NOTE:* 
-    the plugin directory is automatically created in `~/.hyper-plugins/local/` on mac, use this instead of `.hyper-plugins/local/`
+Clone the repository into `~/.hyper-plugins/local/`:
 
-Clone the repository into `.hyper-plugins/local/`:
-
-```bash 
-cd <repository_root>/.hyper-plugins/local/
-git clone git@github.com:cwlowder/hyper-orama.git
+```bash
+cd ~/.hyper-plugins/local/ # move into local plugin directory
+git clone git@github.com:cwlowder/hyper-orama.git # clone repo
+yarn # install dependencies
 ```
 
-Add `hyper-orama` to the localPlugins array in `.hyper.js`
+Your `~/.hyper.js` file should look like this:
 
-Your `hyper.js` file should look like this: 
 ```javascript
-  // ... 
+  // ...
   localPlugins: ['hyper-orama'],
-  // ... 
-
+  // ...
 ```
 
-## Activate Plugin
+```bash
+  yarn -g now # Install now
+  now login # create and login into your now account
+```
 
-Press `Control+Shift+r`
- 
+## Recording Videos
 
+To start/stop recording:
+
+* `Ctrl+Alt+R` (Windows/Linux)
+* `Control+Option+R` (Mac).
+
+After recording, the video will be processed and uploaded. The link will be copied to your clipboard, and a notification will appear in the lower right of the terminal.
+
+The pulsing red light indicates recording in progress, and the white dot indicates upload in progress.
+
+![EXAMPLE-IN](https://share.pulley.host/nay411.mp4)
+
+## Contributing
+
+* _TODO_
