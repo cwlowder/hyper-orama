@@ -10,6 +10,15 @@
   "commit": false,
   "contributors": [
     {
+      "login": "kmui2",
+      "name": "Kevin Mui",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17896701?v=4",
+      "profile": "http://pages.cs.wisc.edu/~mui/",
+      "contributions": [
+        "code",
+      ]
+    },
+    {
       "login": "cwlowder",
       "name": "Curtis Lowder",
       "avatar_url": "https://avatars2.githubusercontent.com/u/17357997?v=4",
