@@ -1,5 +1,5 @@
 # Hyper-Orama
-[![All Contributors](https://flat.badgen.net/github/contributors/cwlowder/hyper-orama)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now)
 
