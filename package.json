@@ -1,7 +1,8 @@
 {
   "name": "hyper-orama",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A screen recorder for the hyper terminal. It publishes all captured sessions to now.sh",
+  "keywords": ["recorder", "recording", "terminal","video", "now", "bash", "hyper", "electron", "redux"],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
