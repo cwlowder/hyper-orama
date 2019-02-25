@@ -1,7 +1,7 @@
 # Hyper-Orama
 [![All Contributors](https://flat.badgen.net/github/contributors/cwlowder/hyper-orama)](#contributors)
 
-A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now)
+A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now) (or locally).
 
 ![EXAMPLE-OUT](demo-out.gif)
 
