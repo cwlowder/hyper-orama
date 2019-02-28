@@ -31,7 +31,7 @@ exports.decorateTerms = (Terms, { React }) => {
     constructor(props, context) {
       super(props, context);
       this.terms = null;
-      this.fileName = `terminal-session-${performance.now()}.mp4`;
+      this.fileName = `terminal-session-${performance.now()}`;
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
@@ -74,7 +74,7 @@ exports.decorateTerms = (Terms, { React }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: this.fileName, use: '@now/static' }],
+          builds: [{ src: this.fileName + '*', use: '@now/static' }],
         };
 
         fs.writeFileSync(
@@ -143,12 +143,18 @@ exports.decorateTerms = (Terms, { React }) => {
           if (this.state.isLoading) return;
           if (!this.state.isRecording) {
             this.titleElement = document.querySelector('header');
-            recording.startRecording(this.state.canvases, this.fileName);
+            this.setState({ isRecording: true });
+
+            recording.startRecording(this.state.canvases, (blob, extension) => {
+              this.fileName = this.fileName + '.' + extension;
+              recording.save(this.fileName, blob);
+              this.setState({ isRecording: false });
+            });
           } else {
             recording.stopRecording();
             this.setState({ isLoading: true });
           }
-          this.setState(prevState => ({ isRecording: !prevState.isRecording }));
+          //this.setState(prevState => ({ isRecording: !prevState.isRecording }));
         },
       });
     }

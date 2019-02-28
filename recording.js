@@ -2,10 +2,11 @@ const VideoStreamMerger = require('video-stream-merger');
 const html2canvas = require('html2canvas');
 const path = require('path');
 const fs = require('fs');
+const extension = require('mime-types').extension;
 
 let record = null;
 
-function save(fileName, data) {
+exports.save = function(fileName, data) {
   const reader = new FileReader();
   reader.onload = function() {
     const buffer = new Buffer.from(reader.result);
@@ -24,7 +25,7 @@ function save(fileName, data) {
     });
   };
   reader.readAsArrayBuffer(data);
-}
+};
 
 /**
  * Generates a canvas element for wrapping the screen recording
@@ -143,7 +144,7 @@ function _getCanvas(canvases, className) {
   return null;
 }
 
-exports.startRecording = function(canvases, fileName) {
+exports.startRecording = function(canvases, callback) {
   const getMax = param => {
     return canvases.reduce((max, val) =>
       Math.max(max[param], val[param]) ? max : val,
@@ -212,8 +213,8 @@ exports.startRecording = function(canvases, fileName) {
 
     record.onstop = () => {
       merger.destroy();
-      const blob = new Blob(chunks, { type: 'video/mp4' });
-      save(fileName, blob);
+      const blob = new Blob(chunks, { type: mimType });
+      callback(blob, extension(mimType));
     };
   });
 };
