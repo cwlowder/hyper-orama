@@ -74,7 +74,7 @@ exports.decorateTerms = (Terms, { React }) => {
         // Write a `now.json` in this directory
         const nowConfig = {
           version: 2,
-          builds: [{ src: this.fileName + '*', use: '@now/static' }],
+          builds: [{ src: this.fileName, use: '@now/static' }],
         };
 
         fs.writeFileSync(
