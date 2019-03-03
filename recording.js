@@ -2,7 +2,7 @@ const VideoStreamMerger = require('video-stream-merger');
 const html2canvas = require('html2canvas');
 const path = require('path');
 const fs = require('fs');
-const extension = require('mime-types').extension;
+const mimeTypes = require('mime-types');
 
 let record = null;
 
@@ -214,7 +214,7 @@ exports.startRecording = function(canvases, callback) {
     record.onstop = () => {
       merger.destroy();
       const blob = new Blob(chunks, { type: mimType });
-      callback(blob, extension(mimType));
+      callback(blob, mimeTypes.extension(mimType));
     };
   });
 };

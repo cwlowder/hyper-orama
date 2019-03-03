@@ -154,7 +154,6 @@ exports.decorateTerms = (Terms, { React }) => {
             recording.stopRecording();
             this.setState({ isLoading: true });
           }
-          //this.setState(prevState => ({ isRecording: !prevState.isRecording }));
         },
       });
     }
