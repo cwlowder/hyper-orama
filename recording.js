@@ -5,6 +5,7 @@ const fs = require('fs');
 const mimeTypes = require('mime-types');
 
 let record = null;
+let saveCallback = null;
 
 function save(fileName, data) {
   const reader = new FileReader();
@@ -216,13 +217,15 @@ exports.startRecording = function(canvases, fileName) {
       const blob = new Blob(chunks, { type: mimeType });
       var fullName = `${fileName}.${mimeTypes.extension(mimeType)}`;
       save(fullName, blob);
+      saveCallback(fullName);
+      saveCallback = null;
     };
   });
 };
 
 exports.stopRecording = function(callback) {
+  saveCallback = callback;
   record.stop();
-  callback();
   /* Remove recording frame */
   const frame = document.getElementById('orama-frame');
   frame.parentNode.removeChild(frame);
