@@ -6,7 +6,7 @@ const mimeTypes = require('mime-types');
 
 let record = null;
 
-exports.save = function(fileName, data) {
+function save(fileName, data) {
   const reader = new FileReader();
   reader.onload = function() {
     const buffer = new Buffer.from(reader.result);
@@ -25,7 +25,7 @@ exports.save = function(fileName, data) {
     });
   };
   reader.readAsArrayBuffer(data);
-};
+}
 
 /**
  * Generates a canvas element for wrapping the screen recording
@@ -144,7 +144,7 @@ function _getCanvas(canvases, className) {
   return null;
 }
 
-exports.startRecording = function(canvases, callback) {
+exports.startRecording = function(canvases, fileName) {
   const getMax = param => {
     return canvases.reduce((max, val) =>
       Math.max(max[param], val[param]) ? max : val,
@@ -200,11 +200,11 @@ exports.startRecording = function(canvases, callback) {
 
     merger.start();
     stream = merger.result;
-    let mimType = 'video/webm';
+    let mimeType = 'video/webm';
     if (MediaRecorder.isTypeSupported('video/mp4')) {
-      mimType = 'video/mp4';
+      mimeType = 'video/mp4';
     }
-    record = new MediaRecorder(stream, { mimType });
+    record = new MediaRecorder(stream, { mimeType });
     record.start();
 
     record.ondataavailable = chunk => {
@@ -213,14 +213,16 @@ exports.startRecording = function(canvases, callback) {
 
     record.onstop = () => {
       merger.destroy();
-      const blob = new Blob(chunks, { type: mimType });
-      callback(blob, mimeTypes.extension(mimType));
+      const blob = new Blob(chunks, { type: mimeType });
+      var fullName = `${fileName}.${mimeTypes.extension(mimeType)}`;
+      save(fullName, blob);
     };
   });
 };
 
-exports.stopRecording = function() {
+exports.stopRecording = function(callback) {
   record.stop();
+  callback();
   /* Remove recording frame */
   const frame = document.getElementById('orama-frame');
   frame.parentNode.removeChild(frame);

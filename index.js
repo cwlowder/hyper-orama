@@ -142,14 +142,10 @@ exports.decorateTerms = (Terms, { React }) => {
             this.titleElement = document.querySelector('header');
             this.setState({ isRecording: true });
 
-            recording.startRecording(this.state.canvases, (blob, extension) => {
-              this.fileName = this.fileName + '.' + extension;
-              recording.save(this.fileName, blob);
-              this.setState({ isRecording: false });
-            });
+            recording.startRecording(this.state.canvases, this.fileName);
           } else {
             recording.stopRecording();
-            this.setState({ isLoading: true });
+            this.setState({ isLoading: true, isRecording: false });
           }
         },
       });
