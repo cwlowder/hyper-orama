@@ -50,12 +50,9 @@ exports.decorateTerms = (Terms, { React }) => {
         );
         if (canvasCollection.length >= 3) {
           const canvases = new Array();
-          document.body.removeEventListener(
-            'DOMSubtreeModified',
-            canvasListener,
-          );
+
           for (let canvas of canvasCollection) canvases.push(canvas);
-          this.setState({ ...this.state, canvases });
+          this.setState({ canvases });
         }
       };
       // Manually fire listener for soft resets
