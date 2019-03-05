@@ -2,8 +2,10 @@ const VideoStreamMerger = require('video-stream-merger');
 const html2canvas = require('html2canvas');
 const path = require('path');
 const fs = require('fs');
+const mimeTypes = require('mime-types');
 
 let record = null;
+let saveCallback = null;
 
 function save(fileName, data) {
   const reader = new FileReader();
@@ -199,11 +201,11 @@ exports.startRecording = function(canvases, fileName) {
 
     merger.start();
     stream = merger.result;
-    let mimType = 'video/webm';
+    let mimeType = 'video/webm';
     if (MediaRecorder.isTypeSupported('video/mp4')) {
-      mimType = 'video/mp4';
+      mimeType = 'video/mp4';
     }
-    record = new MediaRecorder(stream, { mimType });
+    record = new MediaRecorder(stream, { mimeType });
     record.start();
 
     record.ondataavailable = chunk => {
@@ -212,13 +214,17 @@ exports.startRecording = function(canvases, fileName) {
 
     record.onstop = () => {
       merger.destroy();
-      const blob = new Blob(chunks, { type: 'video/mp4' });
-      save(fileName, blob);
+      const blob = new Blob(chunks, { type: mimeType });
+      var fullName = `${fileName}.${mimeTypes.extension(mimeType)}`;
+      save(fullName, blob);
+      saveCallback(fullName);
+      saveCallback = null;
     };
   });
 };
 
-exports.stopRecording = function() {
+exports.stopRecording = function(callback) {
+  saveCallback = callback;
   record.stop();
   /* Remove recording frame */
   const frame = document.getElementById('orama-frame');

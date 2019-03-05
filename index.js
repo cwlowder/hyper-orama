@@ -31,7 +31,7 @@ exports.decorateTerms = (Terms, { React }) => {
     constructor(props, context) {
       super(props, context);
       this.terms = null;
-      this.fileName = `terminal-session-${performance.now()}.mp4`;
+      this.fileName = `terminal-session-${performance.now()}`;
       this.onDecorated = this.onDecorated.bind(this);
       this.state = {
         isRecording: false,
@@ -60,43 +60,43 @@ exports.decorateTerms = (Terms, { React }) => {
       document.body.addEventListener('DOMSubtreeModified', canvasListener);
     }
 
-    componentDidUpdate(_, prevState) {
-      if (!this.state.isRecording && prevState.isRecording) {
-        const dir = path.resolve(__dirname, './.tmp');
+    // Upload the video using now
+    // Pass in the fileName with extension
+    _uploadVideo(fileName) {
+      const dir = path.resolve(__dirname, './.tmp');
 
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-
-        // Write a `now.json` in this directory
-        const nowConfig = {
-          version: 2,
-          builds: [{ src: this.fileName, use: '@now/static' }],
-        };
-
-        fs.writeFileSync(
-          path.join(dir, '/now.json'),
-          JSON.stringify(nowConfig, null, 2),
-          'utf8',
-        );
-
-        const pathToTmp = path.resolve(__dirname, './.tmp/');
-        var child = spawn(
-          path.resolve(__dirname, './node_modules/now/download/dist/now'),
-          [pathToTmp],
-        );
-        let worked = false;
-        child.stdout.on('data', data => {
-          worked = true;
-          this._notifyVideoUploaded(`${data}/${this.fileName}`);
-        });
-
-        child.on('close', () => {
-          if (worked) del(pathToTmp, { force: true });
-          // deletes tmp folder after upload
-          else this._notifyNowLoggedout(this.fileName);
-        });
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
       }
+
+      // Write a `now.json` in this directory
+      const nowConfig = {
+        version: 2,
+        builds: [{ src: fileName, use: '@now/static' }],
+      };
+
+      fs.writeFileSync(
+        path.join(dir, '/now.json'),
+        JSON.stringify(nowConfig, null, 2),
+        'utf8',
+      );
+
+      const pathToTmp = path.resolve(__dirname, './.tmp/');
+      var child = spawn(
+        path.resolve(__dirname, './node_modules/now/download/dist/now'),
+        [pathToTmp],
+      );
+      let worked = false;
+      child.stdout.on('data', data => {
+        worked = true;
+        this._notifyVideoUploaded(`${data}/${fileName}`);
+      });
+
+      child.on('close', () => {
+        if (worked) del(pathToTmp, { force: true });
+        // deletes tmp folder after upload
+        else this._notifyNowLoggedout(fileName);
+      });
     }
 
     _notifyVideoUploaded(nowVideo) {
@@ -140,12 +140,13 @@ exports.decorateTerms = (Terms, { React }) => {
           if (this.state.isLoading) return;
           if (!this.state.isRecording) {
             this.titleElement = document.querySelector('header');
+            this.setState({ isRecording: true });
+
             recording.startRecording(this.state.canvases, this.fileName);
           } else {
-            recording.stopRecording();
-            this.setState({ isLoading: true });
+            recording.stopRecording(fileName => this._uploadVideo(fileName));
+            this.setState({ isLoading: true, isRecording: false });
           }
-          this.setState(prevState => ({ isRecording: !prevState.isRecording }));
         },
       });
     }
