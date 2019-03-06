@@ -1,0 +1,55 @@
+<style>
+  .orama-window {
+    position: absolute;
+    margin: 0 auto;
+    display: block;
+    height: calc(var(--orama-window-height) + var(--orama-title-size));
+    width: var(--orama-window-width);
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: calc(50% - (var(--orama-title-size) / 2));
+    background-color: var(--orama-window-color);
+    overflow: hidden;
+    transform: translateY(-50%);
+    border-radius: var(--orama-title-radius);
+  }
+
+  .orama-title {
+    position: absolute;
+    width: 100%;
+    height: var(--orama-title-size);
+    background-color: var(--orama-window-color);
+  }
+
+  .orama-title div {
+    position: relative;
+    display: inline-block;
+    width: var(--orama-button-size);
+    height: var(--orama-button-size);
+    margin-right: calc(var(--orama-button-size) / 3);
+    top: 50%;
+    transform: translate(calc(var(--orama-button-size) * 1.3), -50%);
+    border-radius: 100%;
+  }
+
+  .orama-title div:nth-child(1) {
+    background-color: var(--orama-close-color);
+  }
+
+  .orama-title div:nth-child(2) {
+    background-color: var(--orama-max-color);
+  }
+
+  .orama-title div:nth-child(3) {
+    background-color: var(--orama-min-color);
+  }
+</style>
+
+<div class="orama-window">
+  <div class="orama-title">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
