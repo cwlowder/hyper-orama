@@ -85,14 +85,7 @@ exports.decorateTerms = (Terms, { React }) => {
 
       const pathToTmp = path.join(__dirname, '.tmp');
       var child = spawn(
-        path.join(
-          __dirname,
-          'node_modules',
-          'now',
-          'download',
-          'dist',
-          isWin ? 'now.cmd' : 'now',
-        ),
+        path.join(__dirname, 'node_modules', '.bin', isWin ? 'now.cmd' : 'now'),
         [pathToTmp],
       );
       let worked = false;
