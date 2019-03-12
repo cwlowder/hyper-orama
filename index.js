@@ -5,6 +5,8 @@ const ncp = require('copy-paste');
 const recording = require('./recording');
 const del = require('del');
 
+const isWin = process.platform === 'win32';
+
 exports.reduceUI = (state, action) => {
   switch (action.type) {
     case 'CONFIG_LOAD':
@@ -83,7 +85,14 @@ exports.decorateTerms = (Terms, { React }) => {
 
       const pathToTmp = path.join(__dirname, '.tmp');
       var child = spawn(
-        path.join(__dirname, 'node_modules', 'now', 'download', 'dist', 'now'),
+        path.join(
+          __dirname,
+          'node_modules',
+          'now',
+          'download',
+          'dist',
+          isWin ? 'now.cmd' : 'now',
+        ),
         [pathToTmp],
       );
       let worked = false;
