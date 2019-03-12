@@ -63,7 +63,7 @@ exports.decorateTerms = (Terms, { React }) => {
     // Upload the video using now
     // Pass in the fileName with extension
     _uploadVideo(fileName) {
-      const dir = path.resolve(__dirname, './.tmp');
+      const dir = path.join(__dirname, '.tmp');
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
@@ -81,9 +81,9 @@ exports.decorateTerms = (Terms, { React }) => {
         'utf8',
       );
 
-      const pathToTmp = path.resolve(__dirname, './.tmp/');
+      const pathToTmp = path.join(__dirname, '.tmp');
       var child = spawn(
-        path.resolve(__dirname, './node_modules/now/download/dist/now'),
+        path.join(__dirname, 'node_modules', 'now', 'download', 'dist', 'now'),
         [pathToTmp],
       );
       let worked = false;
@@ -109,7 +109,7 @@ exports.decorateTerms = (Terms, { React }) => {
     }
 
     _notifyNowLoggedout(fileName) {
-      const dir = path.resolve(__dirname, './.tmp');
+      const dir = path.join(__dirname, '.tmp');
       this.setState({ isLoading: false });
       window.store.dispatch(
         // sents a redux action, to send out noification
