@@ -94,6 +94,10 @@ exports.decorateTerms = (Terms, { React }) => {
         this._notifyVideoUploaded(`${data}/${fileName}`);
       });
 
+      child.on('error', err => {
+        console.error(err); // eslint-disable-line no-console
+      });
+
       child.on('close', () => {
         if (worked) del(pathToTmp, { force: true });
         // deletes tmp folder after upload
