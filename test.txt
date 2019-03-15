@@ -1,1 +1,0 @@
-ffmpeg -i .\text.webm -i .\cursor.webm -filter_complex "[1:v]colorkey=0x000000:1:0[ckout];[0:v][ckout]overlay[out]" -map '[out]' .\out.webm -y

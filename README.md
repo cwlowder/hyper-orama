@@ -1,9 +1,9 @@
 # Hyper-Orama
 [![All Contributors](https://flat.badgen.net/github/contributors/cwlowder/hyper-orama)](#contributors)
 
-A screen recorder for the hyper terminal. It publishes all captured sessions to [now.sh](https://zeit.co/now) (or locally).
+A beautiful screen recorder for ZEIT's Hyper terminal. All captured sessions are automatically published to [now.sh](https://zeit.co/now) or saved locally. Share snippets your work easily with the press of a button! 
 
-![EXAMPLE-OUT](demo-out.gif)
+![hyper-orama-demo](https://user-images.githubusercontent.com/35539750/54399585-10efe100-468d-11e9-9822-e0220a8e3152.gif)
 
 ## Usage
 
@@ -55,7 +55,7 @@ After recording, the video will be processed and uploaded. The link will be copi
 
 The pulsing red light indicates recording in progress, and the white dot indicates upload in progress.
 
-![EXAMPLE-IN](demo-in.gif)
+![hyper-orama-recording-demo](https://user-images.githubusercontent.com/35539750/54399586-10efe100-468d-11e9-9079-9730878956a0.gif)
 
 ## Contributors
 
