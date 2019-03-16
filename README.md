@@ -23,22 +23,9 @@ Use `Ctrl+Alt+R` to start/stop recording.
 
 ## Setup
 
-Clone the repository into `~/.hyper-plugins/local/`:
-
 ```bash
-cd ~/.hyper-plugins/local/ # move into local plugin directory
-git clone git@github.com:cwlowder/hyper-orama.git # clone repo
-yarn # install dependencies
+hyper i hyper-orama # Install hyper-orama into your hyper
 ```
-
-Your `~/.hyper.js` file should look like this:
-
-```javascript
-  // ...
-  localPlugins: ['hyper-orama'],
-  // ...
-```
-
 ```bash
   yarn -g now # Install now
   now login # create and login into your now account
